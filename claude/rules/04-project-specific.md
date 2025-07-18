@@ -1,7 +1,7 @@
 # Project-Specific Rules
 
 ## Jira Integration
-- Branch names typically follow the pattern: `feature/PRO-####-description`
+- Branch names typically follow the pattern: `PRO-####-description`
 - Always extract ticket numbers from branch names when generating commit messages
 - PRO prefix may vary based on project
 

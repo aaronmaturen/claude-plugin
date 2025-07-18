@@ -185,6 +185,17 @@ create_symlink "$SCRIPT_DIR/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md" "Claude 
 create_symlink "$SCRIPT_DIR/claude/hooks" "$HOME/.claude/hooks" "Claude hooks"
 create_symlink "$SCRIPT_DIR/claude/commands" "$HOME/.claude/commands" "Claude commands"
 
+# Sync MCP servers
+if [[ -x "$SCRIPT_DIR/bin/clair-mcp" ]]; then
+    say "Syncing MCP servers..."
+    "$SCRIPT_DIR/bin/clair-mcp" || {
+        warn "Failed to sync MCP servers"
+        say "You can manually sync them later with: $SCRIPT_DIR/bin/clair-mcp"
+    }
+else
+    warn "clair-mcp script not found or not executable"
+fi
+
 # Update shell configuration with atomic writes
 update_shell_rc() {
     local rc_file=$1
