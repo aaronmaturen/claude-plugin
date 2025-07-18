@@ -2,7 +2,7 @@
 
 Analyze staged changes and generate a commit message with JIRA ticket number from the current branch.
 
-**IMPORTANT**: DO NOT COMMIT - only output the commit message
+**IMPORTANT**: DO NOT COMMIT - only output the commit message and copy it to clipboard
 
 ## Steps:
 
@@ -40,6 +40,11 @@ Analyze staged changes and generate a commit message with JIRA ticket number fro
    Detailed explanation of changes, why they were made,
    and any important context. Wrap at 72 characters.
    ```
+
+4. **Copy to clipboard:**
+   - After generating the commit message, use `pbcopy` to copy it to clipboard
+   - Display the commit message to the user
+   - Add a note that it has been copied to clipboard
 
 ## Guidelines:
 - **Subject line**: 
