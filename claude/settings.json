@@ -1,6 +1,12 @@
 {
   "model": "opus",
   "hooks": {
+    "Stop": [
+      {
+        "type": "command",
+        "command": "sh /Users/aaron/Projects/aaronmaturen/clair-de-config/claude/hooks/claude-summary-logger.sh"
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Edit|MultiEdit|Write",
@@ -12,6 +18,19 @@
           {
             "type": "command",
             "command": "sh ~/.claude/hooks/test_runner.sh"
+          },
+          {
+            "type": "command",
+            "command": "CLAUDE_HOOK_TYPE=post_edit CLAUDE_FILE_PATH=\"{{file_path}}\" sh ~/.claude/hooks/obsidian-logger.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "CLAUDE_COMMAND=\"{{command}}\" sh ~/.claude/hooks/command-describer.sh"
           }
         ]
       }

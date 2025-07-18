@@ -63,12 +63,24 @@ Analyze a code module as a mathematician/logician to create a formal finite stat
      ∀ x ∈ Input : Precondition(x) ⟹ Postcondition(f(x))
      ```
 
-6. **Generate Report**
+6. **Generate Excalidraw Diagram**
+   - Create visual FSM representation in Excalidraw format
+   - Include states, transitions, and annotations
+   - Save to Obsidian vault with proper linking
+   - Generate both `.excalidraw` file and embedded markdown
+
+7. **Generate Report with Visuals**
    ```markdown
    # Formal Analysis of [Module Name]
    
    ## Finite State Machine Model
-   [Visual or textual representation]
+   ![[module-name-fsm.excalidraw]]
+   
+   ## State Transition Table
+   | Current State | Input/Event | Next State | Conditions |
+   |--------------|-------------|------------|------------|
+   | INIT | parse() | PARSING | valid input |
+   | PARSING | error | ERROR | invalid syntax |
    
    ## Invariants
    ✓ Invariant 1: [Description] - HOLDS
@@ -79,6 +91,7 @@ Analyze a code module as a mathematician/logician to create a formal finite stat
       - Condition: [When it occurs]
       - Impact: [What breaks]
       - Proof: [Mathematical reasoning]
+      - Visual: ![[edge-case-1.excalidraw]]
    
    ## Formal Proofs
    ### Theorem 1: [Function correctness]
@@ -148,3 +161,87 @@ Transitions:
 - Focuses on provable properties and counterexamples
 - Provides actionable fixes for discovered issues
 - Think like a mathematician: "What can go wrong?"
+
+## Excalidraw Integration:
+
+### File Generation
+When generating Excalidraw diagrams:
+
+1. **Create `.excalidraw` files** in the Obsidian vault:
+   - Path: `{OBSIDIAN_VAULT}/claude-sessions/diagrams/{project-name}/`
+   - Naming: `{module-name}-fsm-{date}.excalidraw`
+
+2. **Excalidraw JSON Format**:
+   ```json
+   {
+     "type": "excalidraw",
+     "version": 2,
+     "elements": [
+       {
+         "type": "ellipse",
+         "id": "state-init",
+         "x": 100,
+         "y": 100,
+         "width": 120,
+         "height": 60,
+         "strokeColor": "#000000",
+         "backgroundColor": "#ffffff",
+         "fillStyle": "solid",
+         "text": "INIT"
+       },
+       {
+         "type": "arrow",
+         "id": "transition-1",
+         "x": 220,
+         "y": 130,
+         "width": 100,
+         "height": 0,
+         "strokeColor": "#000000",
+         "startBinding": {"elementId": "state-init"},
+         "endBinding": {"elementId": "state-parsing"},
+         "text": "parse()"
+       }
+     ]
+   }
+   ```
+
+3. **Diagram Elements**:
+   - **States**: Ellipses or rectangles with state names
+   - **Transitions**: Arrows with labels for triggers/conditions
+   - **Annotations**: Text elements for invariants and notes
+   - **Groups**: Dotted rectangles for subsystems
+   - **Colors**:
+     - Green: Safe states
+     - Yellow: Warning states
+     - Red: Error states
+     - Blue: External interfaces
+
+4. **Link in Obsidian**:
+   ```markdown
+   ![[parser-fsm-2024-01-15.excalidraw|800]]
+   ```
+
+### Example FSM Diagram Structure:
+- Initial state (double circle)
+- Normal states (circles)
+- Error states (red circles)
+- Final states (double circle with dot)
+- Transitions with guards [condition]
+- Actions on transitions /action
+- Self-loops for repeated operations
+
+### Auto-save to Obsidian:
+The diagram files should be automatically saved to the same Obsidian vault structure used for session logging, making them accessible and linked from the analysis reports.
+
+### Implementation Note:
+When running atm-proof, Claude will:
+1. Analyze the code module mathematically
+2. Generate Excalidraw diagrams using the helper script:
+   ```bash
+   ~/.claude/hooks/excalidraw-generator.sh fsm "module-name" "project-name" "STATE1,STATE2,STATE3" "transitions"
+   ```
+3. Save diagrams to: `{OBSIDIAN_VAULT}/claude-sessions/diagrams/{project}/`
+4. Create analysis report in: `{OBSIDIAN_VAULT}/claude-sessions/{parent}/{project}/`
+5. Link diagrams in the report using: `![[diagram-name.excalidraw]]`
+
+The visual diagrams will be viewable and editable in Obsidian with the Excalidraw plugin.

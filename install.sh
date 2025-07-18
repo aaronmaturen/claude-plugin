@@ -213,6 +213,15 @@ update_shell_rc() {
             warn "$shell_name already sources clair-de-config environment"
         fi
         
+        # Check if obsidian-config.sh source is already present
+        if ! grep -q "source ~/.claude/hooks/obsidian-config.sh" "$rc_file"; then
+            say "Adding obsidian-config.sh to $shell_name"
+            content+=$'\n\n# Add to your .bashrc or .zshrc:\n# source ~/.claude/hooks/obsidian-config.sh'
+            updated=true
+        else
+            warn "$shell_name already sources obsidian-config.sh"
+        fi
+        
         # Atomic write if updated
         if [[ "$updated" == "true" ]]; then
             atomic_write "$rc_file" "$content"
