@@ -1,0 +1,48 @@
+#!/bin/bash
+# clair-de-config: A synchronization ballet for your Claude configuration files
+# This file is sourced by your shell to provide clair-de-config functionality
+
+# Determine the directory where clair-de-config is installed
+# This file should be sourced using its full path from the repo
+CLAIR_CONFIG_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+export CLAIR_CONFIG_HOME
+
+# Source the utility functions
+if [[ -f "$CLAIR_CONFIG_HOME/utilities" ]]; then
+    source "$CLAIR_CONFIG_HOME/utilities"
+fi
+
+# Add clair-de-config commands to PATH (append, not prepend for security)
+export PATH="$PATH:$CLAIR_CONFIG_HOME"
+
+# Utility function to check if we're in a git repo
+_clair_in_git_repo() {
+    cd "$CLAIR_CONFIG_HOME" && git rev-parse --git-dir >/dev/null 2>&1
+}
+
+# Utility function for colorful output (because why not?)
+_clair_say() {
+    local level=$1
+    shift
+    case $level in
+        info) echo -e "\033[36m→\033[0m $*" ;;
+        success) echo -e "\033[32m✓\033[0m $*" ;;
+        warn) echo -e "\033[33m⚠\033[0m $*" ;;
+        error) echo -e "\033[31m✗\033[0m $*" ;;
+        *) echo "$*" ;;
+    esac
+}
+
+# Quick status check on shell startup (silent unless issues)
+if _clair_in_git_repo; then
+    # Check if there are uncommitted changes
+    if [[ -n $(cd "$CLAIR_CONFIG_HOME" && git status --porcelain 2>/dev/null) ]]; then
+        _clair_say warn "clair-de-config has uncommitted changes. Run 'clair-status' for details."
+    fi
+fi
+
+# Shell completion for clair commands (if using zsh)
+if [[ -n "$ZSH_VERSION" ]]; then
+    fpath=("$CLAIR_CONFIG_HOME/completions" $fpath)
+fi

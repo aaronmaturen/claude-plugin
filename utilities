@@ -1,0 +1,299 @@
+#!/bin/bash
+# clair-de-config utilities
+# Provides common functions for safe operations, locking, validation, and error handling
+
+# Ensure we exit on errors
+set -euo pipefail
+
+# Lock file management
+readonly CLAIR_LOCK_FILE="${CLAIR_CONFIG_HOME:-$HOME/.clair-de-config}/.lock"
+readonly CLAIR_LOCK_TIMEOUT=30
+
+# Acquire exclusive lock for critical operations
+acquire_lock() {
+    local timeout=${1:-$CLAIR_LOCK_TIMEOUT}
+    local lock_acquired=false
+    
+    # Create lock directory if it doesn't exist
+    mkdir -p "$(dirname "$CLAIR_LOCK_FILE")"
+    
+    # Try to acquire lock with timeout
+    if command -v flock >/dev/null 2>&1; then
+        # Use flock if available (Linux/macOS with coreutils)
+        exec 200>"$CLAIR_LOCK_FILE"
+        if flock -w "$timeout" -x 200; then
+            lock_acquired=true
+        fi
+    else
+        # Fallback to mkdir-based locking
+        local count=0
+        while [ $count -lt $timeout ]; do
+            if mkdir "$CLAIR_LOCK_FILE.d" 2>/dev/null; then
+                lock_acquired=true
+                break
+            fi
+            sleep 1
+            ((count++))
+        done
+    fi
+    
+    if [ "$lock_acquired" = false ]; then
+        _clair_say error "Failed to acquire lock after ${timeout}s. Another operation may be in progress."
+        exit 1
+    fi
+}
+
+# Release lock
+release_lock() {
+    if command -v flock >/dev/null 2>&1; then
+        # flock releases automatically when script exits
+        :
+    else
+        # Remove directory-based lock
+        rmdir "$CLAIR_LOCK_FILE.d" 2>/dev/null || true
+    fi
+}
+
+# Ensure lock is released on exit
+trap 'release_lock' EXIT INT TERM
+
+# Validate and sanitize path inputs
+sanitize_path() {
+    local path="$1"
+    
+    # Remove potentially dangerous characters
+    path="${path//[^a-zA-Z0-9._\-\/\~]/}"
+    
+    # Resolve to absolute path if it exists
+    if [[ -e "$path" ]]; then
+        path="$(cd "$(dirname "$path")" && pwd)/$(basename "$path")"
+    fi
+    
+    # Ensure path doesn't contain .. sequences after resolution
+    if [[ "$path" =~ \.\. ]]; then
+        _clair_say error "Invalid path: $path contains parent directory references"
+        return 1
+    fi
+    
+    echo "$path"
+}
+
+# Validate alias name
+validate_alias_name() {
+    local name="$1"
+    
+    # Check if name matches valid pattern
+    if [[ ! "$name" =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]; then
+        return 1
+    fi
+    
+    # Check against reserved words
+    local reserved_words=("if" "then" "else" "elif" "fi" "case" "esac" "for" "while" "until" "do" "done" "function" "return" "exit" "break" "continue")
+    for reserved in "${reserved_words[@]}"; do
+        if [[ "$name" == "$reserved" ]]; then
+            return 1
+        fi
+    done
+    
+    return 0
+}
+
+# Safely escape command for alias
+escape_alias_command() {
+    local cmd="$1"
+    
+    # Replace single quotes with '\''
+    cmd="${cmd//\'/\'\\\'\'}"
+    
+    # Check for dangerous patterns
+    if [[ "$cmd" =~ (\$\(|\`|;|\||&&|\|\|) ]]; then
+        _clair_say warn "Command contains potentially dangerous patterns"
+    fi
+    
+    echo "$cmd"
+}
+
+# Create backup with unique name
+create_unique_backup() {
+    local source="$1"
+    local backup_base="$2"
+    
+    # Use microseconds for uniqueness
+    local timestamp=$(date +%Y%m%d-%H%M%S-%N)
+    # Fallback for systems without nanoseconds
+    if [[ "$timestamp" =~ N$ ]]; then
+        timestamp=$(date +%Y%m%d-%H%M%S)-$$
+    fi
+    
+    local backup_dir="${backup_base}/${timestamp}"
+    
+    # Ensure unique directory
+    local counter=0
+    while [[ -d "$backup_dir" ]]; do
+        ((counter++))
+        backup_dir="${backup_base}/${timestamp}-${counter}"
+    done
+    
+    mkdir -p "$backup_dir"
+    echo "$backup_dir"
+}
+
+# Atomic file write
+atomic_write() {
+    local target="$1"
+    local content="$2"
+    
+    local temp_file
+    temp_file=$(mktemp "${target}.XXXXXX")
+    
+    # Ensure cleanup on failure
+    trap 'rm -f "$temp_file"' ERR
+    
+    # Write content to temp file
+    printf "%s" "$content" > "$temp_file"
+    
+    # Set permissions to match target if it exists
+    if [[ -f "$target" ]]; then
+        chmod --reference="$target" "$temp_file" 2>/dev/null || \
+        chmod "$(stat -f %Lp "$target" 2>/dev/null || echo 644)" "$temp_file"
+    fi
+    
+    # Atomic move
+    mv -f "$temp_file" "$target"
+    
+    # Remove trap
+    trap - ERR
+}
+
+# Verify symlink points to expected target
+verify_symlink() {
+    local link="$1"
+    local expected_target="$2"
+    
+    if [[ ! -L "$link" ]]; then
+        return 1
+    fi
+    
+    local actual_target
+    actual_target=$(readlink "$link")
+    
+    # Normalize paths for comparison
+    local norm_expected norm_actual
+    norm_expected=$(cd "$(dirname "$expected_target")" 2>/dev/null && pwd)/$(basename "$expected_target")
+    norm_actual=$(cd "$(dirname "$actual_target")" 2>/dev/null && pwd)/$(basename "$actual_target") 2>/dev/null || echo "$actual_target"
+    
+    [[ "$norm_expected" == "$norm_actual" ]]
+}
+
+# Safe git operations with proper error handling
+safe_git() {
+    local operation="$1"
+    shift
+    
+    case "$operation" in
+        status|diff|log|branch)
+            # Read-only operations
+            git "$operation" "$@" 2>&1 || {
+                _clair_say error "Git $operation failed"
+                return 1
+            }
+            ;;
+        add|commit|fetch|pull|checkout)
+            # Modifying operations - require lock
+            if [[ "${CLAIR_LOCK_ACQUIRED:-false}" != "true" ]]; then
+                _clair_say error "Lock required for git $operation"
+                return 1
+            fi
+            git "$operation" "$@" 2>&1 || {
+                _clair_say error "Git $operation failed"
+                return 1
+            }
+            ;;
+        *)
+            _clair_say error "Unknown git operation: $operation"
+            return 1
+            ;;
+    esac
+}
+
+# Transaction log for rollback capability
+CLAIR_TRANSACTION_LOG="${CLAIR_CONFIG_HOME:-$HOME/.clair-de-config}/.transaction.log"
+
+# Log operation for potential rollback
+log_operation() {
+    local operation="$1"
+    local details="$2"
+    local timestamp=$(date +%Y%m%d-%H%M%S)
+    
+    echo "${timestamp}|${operation}|${details}" >> "$CLAIR_TRANSACTION_LOG"
+}
+
+# Rollback last operation
+rollback_last_operation() {
+    if [[ ! -f "$CLAIR_TRANSACTION_LOG" ]]; then
+        _clair_say warn "No transaction log found"
+        return 1
+    fi
+    
+    local last_op
+    last_op=$(tail -n1 "$CLAIR_TRANSACTION_LOG")
+    
+    local timestamp operation details
+    IFS='|' read -r timestamp operation details <<< "$last_op"
+    
+    case "$operation" in
+        symlink_created)
+            rm -f "$details"
+            _clair_say info "Removed symlink: $details"
+            ;;
+        backup_created)
+            _clair_say info "Backup preserved at: $details"
+            ;;
+        file_modified)
+            _clair_say warn "Cannot auto-rollback file modification: $details"
+            ;;
+    esac
+    
+    # Remove the rolled back operation from log
+    sed -i '' -e '$d' "$CLAIR_TRANSACTION_LOG" 2>/dev/null || \
+    sed -i '$d' "$CLAIR_TRANSACTION_LOG"
+}
+
+# Enhanced error handling
+set_error_trap() {
+    trap 'handle_error $? $LINENO' ERR
+}
+
+handle_error() {
+    local exit_code=$1
+    local line_number=$2
+    
+    _clair_say error "Command failed with exit code $exit_code at line $line_number"
+    
+    if [[ "${CLAIR_ROLLBACK_ON_ERROR:-false}" == "true" ]]; then
+        _clair_say info "Attempting rollback..."
+        rollback_last_operation
+    fi
+    
+    release_lock
+    exit "$exit_code"
+}
+
+# Utility function for colorful output
+_clair_say() {
+    local level=$1
+    shift
+    case $level in
+        info) echo -e "\033[36m→\033[0m $*" ;;
+        success) echo -e "\033[32m✓\033[0m $*" ;;
+        warn) echo -e "\033[33m⚠\033[0m $*" ;;
+        error) echo -e "\033[31m✗\033[0m $*" ;;
+        *) echo "$*" ;;
+    esac
+}
+
+# Export functions for use in other scripts
+export -f acquire_lock release_lock sanitize_path validate_alias_name
+export -f escape_alias_command create_unique_backup atomic_write
+export -f verify_symlink safe_git log_operation rollback_last_operation
+export -f set_error_trap handle_error _clair_say

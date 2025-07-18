@@ -1,0 +1,20 @@
+{
+  "model": "opus",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh ~/.claude/hooks/formatter.sh"
+          },
+          {
+            "type": "command",
+            "command": "sh ~/.claude/hooks/test_runner.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+# Backups created by install.sh
+backups/
+
+# OS files
+.DS_Store
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Claude local settings
+claude/settings.local.json
+
+# Transaction logs
+.transaction.log

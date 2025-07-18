@@ -1,0 +1,193 @@
+#!/bin/bash
+set -euo pipefail
+# clair-sync: Pull the latest configuration from the mothership
+
+# Get the directory of this script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source the helper functions
+source "$SCRIPT_DIR/clair-de-config" || {
+    echo "Error: clair-de-config not properly installed. Run install.sh first."
+    exit 1
+}
+
+# Enable error handling
+set_error_trap
+
+# Acquire lock for sync operations
+acquire_lock
+CLAIR_LOCK_ACQUIRED=true
+
+# Default mode is pull
+MODE="pull"
+MESSAGE=""
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --push)
+            MODE="push"
+            shift
+            ;;
+        -m|--message)
+            MESSAGE="$2"
+            shift 2
+            ;;
+        -h|--help)
+            echo "Usage: clair-sync [--push] [-m message]"
+            echo ""
+            echo "Synchronize your Claude configuration with the repository"
+            echo ""
+            echo "Options:"
+            echo "  --push         Push local changes to the repository"
+            echo "  -m, --message  Commit message (required with --push)"
+            echo "  -h, --help     Show this help message"
+            echo ""
+            echo "Without --push, this command pulls the latest changes from the repository."
+            exit 0
+            ;;
+        *)
+            _clair_say error "Unknown option: $1"
+            exit 1
+            ;;
+    esac
+done
+
+# Validate and change to the repository directory
+CLAIR_CONFIG_HOME=$(sanitize_path "$CLAIR_CONFIG_HOME")
+cd "$CLAIR_CONFIG_HOME" || {
+    _clair_say error "Could not access clair-de-config directory"
+    exit 1
+}
+
+# Check if we're in a git repository
+if ! _clair_in_git_repo; then
+    _clair_say error "Not a git repository. Please initialize with: git init"
+    exit 1
+fi
+
+if [[ "$MODE" == "push" ]]; then
+    # Push mode: commit and push local changes
+    _clair_say info "Checking for local changes..."
+    
+    if [[ -z $(git status --porcelain) ]]; then
+        _clair_say info "No changes to synchronize"
+        exit 0
+    fi
+    
+    # Show what will be committed
+    _clair_say info "Changes to be synchronized:"
+    safe_git status --short
+    echo ""
+    
+    # Require a commit message for push
+    if [[ -z "$MESSAGE" ]]; then
+        _clair_say error "Commit message required when pushing changes"
+        echo "Use: clair-sync --push -m \"Your message here\""
+        exit 1
+    fi
+    
+    # Validate commit message (basic sanitization)
+    MESSAGE=$(echo "$MESSAGE" | tr -d '\r' | head -n 20)
+    
+    # Add all changes
+    _clair_say info "Staging changes..."
+    safe_git add -A
+    
+    # Commit
+    _clair_say info "Committing changes..."
+    safe_git commit -m "$MESSAGE" || {
+        _clair_say error "Failed to commit changes"
+        exit 1
+    }
+    
+    # Push (if remote is configured)
+    if git remote get-url origin >/dev/null 2>&1; then
+        _clair_say info "Pushing to remote repository..."
+        git push || {
+            _clair_say error "Failed to push changes"
+            _clair_say info "You may need to pull first: clair-sync"
+            exit 1
+        }
+        _clair_say success "Changes pushed successfully!"
+    else
+        _clair_say warn "No remote repository configured"
+        _clair_say info "To add a remote: git remote add origin <repository-url>"
+    fi
+    
+else
+    # Pull mode: fetch latest changes
+    _clair_say info "Synchronizing with the latest configuration..."
+    
+    # Check for uncommitted changes
+    if [[ -n $(git status --porcelain) ]]; then
+        _clair_say warn "You have uncommitted changes:"
+        git status --short
+        echo ""
+        read -p "Continue with sync? This may cause conflicts. [y/N] " -n 1 -r
+        echo ""
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            _clair_say info "Sync cancelled"
+            exit 0
+        fi
+    fi
+    
+    # Fetch if remote exists
+    if git remote get-url origin >/dev/null 2>&1; then
+        _clair_say info "Fetching latest changes..."
+        safe_git fetch || {
+            _clair_say warn "Could not fetch from remote"
+        }
+        
+        # Check if we're behind
+        LOCAL=$(git rev-parse @)
+        REMOTE=$(git rev-parse @{u} 2>/dev/null || echo "")
+        BASE=$(git merge-base @ @{u} 2>/dev/null || echo "")
+        
+        if [[ -z "$REMOTE" ]]; then
+            _clair_say info "No remote tracking branch configured"
+        elif [[ "$LOCAL" = "$REMOTE" ]]; then
+            _clair_say success "Already up to date!"
+        elif [[ "$LOCAL" = "$BASE" ]]; then
+            # We're behind, pull changes
+            _clair_say info "Pulling latest changes..."
+            safe_git pull --ff-only || {
+                _clair_say error "Failed to pull changes (fast-forward not possible)"
+                _clair_say info "You may need to resolve conflicts manually"
+                _clair_say info "Try: git pull --rebase or git pull --merge"
+                exit 1
+            }
+            _clair_say success "Configuration synchronized successfully!"
+            _clair_say info "Reload your shell to apply any alias changes"
+        elif [[ "$REMOTE" = "$BASE" ]]; then
+            _clair_say warn "You have unpushed changes"
+            _clair_say info "Use: clair-sync --push -m \"message\" to push them"
+        else
+            _clair_say warn "Diverged from remote. Manual intervention required."
+        fi
+    else
+        _clair_say info "No remote repository configured"
+        _clair_say info "Your configuration is stored locally only"
+    fi
+fi
+
+# Verify symlinks are intact (Claude configs only, not aliases)
+_clair_say info "Verifying configuration links..."
+verify_symlink() {
+    local link=$1
+    local target=$2
+    local name=$3
+    
+    if [[ ! -L "$link" ]]; then
+        _clair_say warn "$name is not a symlink. Run install.sh to fix."
+    elif [[ ! -e "$link" ]]; then
+        _clair_say warn "$name symlink is broken. Run install.sh to fix."
+    fi
+}
+
+verify_symlink "$HOME/.claude/settings.json" "$CLAIR_CONFIG_HOME/claude/settings.json" "Claude settings"
+verify_symlink "$HOME/.claude/CLAUDE.md" "$CLAIR_CONFIG_HOME/claude/CLAUDE.md" "Claude instructions"
+verify_symlink "$HOME/.claude/hooks" "$CLAIR_CONFIG_HOME/claude/hooks" "Claude hooks"
+verify_symlink "$HOME/.claude/commands" "$CLAIR_CONFIG_HOME/claude/commands" "Claude commands"
+
+_clair_say success "Sync complete!"
