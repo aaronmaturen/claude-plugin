@@ -53,8 +53,7 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Validate and change to the repository directory
-CLAIR_CONFIG_HOME=$(sanitize_path "$CLAIR_CONFIG_HOME")
+# Change to the repository directory
 cd "$CLAIR_CONFIG_HOME" || {
     _clair_say error "Could not access clair-de-config directory"
     exit 1

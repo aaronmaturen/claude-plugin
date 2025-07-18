@@ -57,27 +57,6 @@ release_lock() {
 # Ensure lock is released on exit
 trap 'release_lock' EXIT INT TERM
 
-# Validate and sanitize path inputs
-sanitize_path() {
-    local path="$1"
-    
-    # Remove potentially dangerous characters
-    path="${path//[^a-zA-Z0-9._\-\/\~]/}"
-    
-    # Resolve to absolute path if it exists
-    if [[ -e "$path" ]]; then
-        path="$(cd "$(dirname "$path")" && pwd)/$(basename "$path")"
-    fi
-    
-    # Ensure path doesn't contain .. sequences after resolution
-    if [[ "$path" =~ \.\. ]]; then
-        _clair_say error "Invalid path: $path contains parent directory references"
-        return 1
-    fi
-    
-    echo "$path"
-}
-
 # Validate alias name
 validate_alias_name() {
     local name="$1"
@@ -106,7 +85,7 @@ escape_alias_command() {
     cmd="${cmd//\'/\'\\\'\'}"
     
     # Check for dangerous patterns
-    if [[ "$cmd" =~ (\$\(|\`|;|\||&&|\|\|) ]]; then
+    if [[ "$cmd" =~ \$\( ]] || [[ "$cmd" =~ \` ]] || [[ "$cmd" =~ \; ]] || [[ "$cmd" =~ \| ]] || [[ "$cmd" =~ \&\& ]] || [[ "$cmd" =~ \|\| ]]; then
         _clair_say warn "Command contains potentially dangerous patterns"
     fi
     
@@ -293,7 +272,7 @@ _clair_say() {
 }
 
 # Export functions for use in other scripts
-export -f acquire_lock release_lock sanitize_path validate_alias_name
+export -f acquire_lock release_lock validate_alias_name
 export -f escape_alias_command create_unique_backup atomic_write
 export -f verify_symlink safe_git log_operation rollback_last_operation
 export -f set_error_trap handle_error _clair_say
