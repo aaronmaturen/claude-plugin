@@ -1,359 +1,228 @@
-#!/bin/bash
+# Comprehensive Architecture Review
 
-# Principal Architect Review Tool
-# Performs comprehensive architectural analysis covering security, performance,
-# maintainability, best practices, and improvement opportunities
+Perform a thorough architectural analysis of the codebase, evaluating security, performance, maintainability, scalability, and best practices. Generate a detailed report with scores, findings, and actionable recommendations.
 
-set -euo pipefail
+**Project Path:** $ARGUMENTS (defaults to current directory)
 
-# Colors for output
-RED='\033[0;31m'
-YELLOW='\033[1;33m'
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-PURPLE='\033[0;35m'
-NC='\033[0m' # No Color
+## Analysis Framework:
 
-echo -e "${BLUE}🏛️  Principal Architect Review${NC}"
-echo -e "${BLUE}================================${NC}"
-echo
+### 1. **Project Structure Analysis**
+   - Directory organization and file structure
+   - Module boundaries and separation of concerns
+   - Configuration management
+   - Documentation presence and quality
+   - Build and deployment structure
 
-# Initialize scoring
-total_score=0
-max_score=0
-findings=()
-recommendations=()
-security_issues=()
-performance_issues=()
+### 2. **Security Analysis**
+   - Authentication and authorization patterns
+   - Input validation and sanitization
+   - Secrets management (hardcoded credentials, API keys)
+   - Dependency vulnerabilities
+   - Access control and permissions
+   - Encryption and data protection
+   - Security headers and configurations
+   - OWASP Top 10 compliance
 
-# Helper function to add score
-add_score() {
-    local points=$1
-    local max=$2
-    total_score=$((total_score + points))
-    max_score=$((max_score + max))
-}
+### 3. **Performance & Scalability**
+   - Algorithm complexity analysis
+   - Database query optimization
+   - Caching strategies
+   - Resource utilization patterns
+   - Concurrency and parallelism
+   - Memory management
+   - I/O optimization
+   - Scalability bottlenecks
+   - Load testing readiness
 
-# 1. PROJECT STRUCTURE ANALYSIS
-echo -e "${PURPLE}📊 Project Structure Analysis${NC}"
-echo "================================"
+### 4. **Code Quality & Maintainability**
+   - Code organization and structure
+   - Function/class complexity (cyclomatic complexity)
+   - Code duplication detection
+   - Naming conventions consistency
+   - Documentation coverage
+   - Test coverage and quality
+   - Error handling patterns
+   - Logging and monitoring
+   - Technical debt assessment
 
-# Count different file types
-shell_files=$(find . -name "*.sh" -type f ! -path "./node_modules/*" ! -path "./.git/*" ! -path "./backups/*" 2>/dev/null | wc -l || echo 0)
-config_files=$(find . \( -name "*.json" -o -name "*.yaml" -o -name "*.yml" -o -name "*.conf" \) ! -path "./node_modules/*" ! -path "./.git/*" 2>/dev/null | wc -l || echo 0)
-total_files=$(find . -type f ! -path "./node_modules/*" ! -path "./.git/*" ! -path "./backups/*" 2>/dev/null | wc -l || echo 0)
-directories=$(find . -type d ! -path "./node_modules/*" ! -path "./.git/*" ! -path "./backups/*" 2>/dev/null | wc -l || echo 0)
+### 5. **Architecture Patterns & Design**
+   - Design pattern usage and consistency
+   - SOLID principles adherence
+   - Coupling and cohesion analysis
+   - Microservices boundaries (if applicable)
+   - API design and versioning
+   - Event-driven architecture
+   - Domain-driven design alignment
+   - Dependency injection patterns
 
-echo "Total files: $total_files"
-echo "Directories: $directories"
-echo "Shell scripts: $shell_files"
-echo "Config files: $config_files"
+### 6. **DevOps & Infrastructure**
+   - CI/CD pipeline configuration
+   - Infrastructure as Code (IaC)
+   - Container strategy (Docker, Kubernetes)
+   - Monitoring and observability
+   - Deployment strategies
+   - Environment configuration
+   - Backup and disaster recovery
+   - Service mesh considerations
 
-# Check for good project structure
-if [[ -f "README.md" ]]; then
-    echo -e "${GREEN}✓ README.md present${NC}"
-    add_score 10 10
-else
-    echo -e "${RED}✗ No README.md found${NC}"
-    recommendations+=("Create a comprehensive README.md with setup instructions, architecture overview, and usage examples")
-    add_score 0 10
-fi
+### 7. **Compliance & Standards**
+   - Industry standards compliance (ISO, SOC2)
+   - Regulatory compliance (GDPR, HIPAA)
+   - Accessibility standards (WCAG)
+   - Coding standards adherence
+   - License compliance
+   - Open source dependency management
 
-if [[ -f ".gitignore" ]]; then
-    echo -e "${GREEN}✓ .gitignore present${NC}"
-    add_score 5 5
-else
-    echo -e "${YELLOW}⚠ No .gitignore found${NC}"
-    recommendations+=("Add .gitignore to prevent committing sensitive or unnecessary files")
-    add_score 0 5
-fi
+## Output Format:
 
-echo
+### Generate Obsidian Architecture Report
 
-# 2. SECURITY ANALYSIS
-echo -e "${PURPLE}🔒 Security Analysis${NC}"
-echo "================================"
+1. **Create report in Obsidian vault**:
+   ```bash
+   OBSIDIAN_VAULT="${OBSIDIAN_VAULT:-$HOME/Documents/Obsidian/Development}"
+   PROJECT_NAME=$(basename $(git rev-parse --show-toplevel 2>/dev/null) || echo "unknown")
+   PARENT_DIR=$(basename $(dirname $(git rev-parse --show-toplevel 2>/dev/null)) || echo "projects")
+   DATE=$(date +%Y-%m-%d-%H%M)
+   
+   REPORT_DIR="${OBSIDIAN_VAULT}/claude-sessions/${PARENT_DIR}/${PROJECT_NAME}"
+   mkdir -p "$REPORT_DIR"
+   
+   REPORT_FILE="${REPORT_DIR}/architecture-review-${DATE}.md"
+   ```
 
-# Check for hardcoded credentials
-echo -n "Checking for hardcoded credentials... "
-potential_creds=0
-if find . -name "*.sh" -o -name "*.bash" -o -name "*.conf" -o -name "*.json" 2>/dev/null | xargs grep -i -E "password=|passwd=|pwd=|secret=|api_key=|apikey=|token=|private_key=" 2>/dev/null | grep -v "password=\"\$" | grep -v "token=\"\$" | grep -v ".git" | grep -q .; then
-    potential_creds=1
-fi
+2. **Report structure**:
+   ```markdown
+   # Architecture Review: [Project Name]
+   
+   **Date:** [Current Date]
+   **Reviewer:** Claude (AI Architecture Analyst)
+   **Project Path:** [Path]
+   
+   ## Executive Summary
+   
+   ### Overall Score: [Score]/100
+   **Grade:** [A-F] - [Description]
+   
+   ### Key Strengths
+   - [Strength 1]
+   - [Strength 2]
+   - [Strength 3]
+   
+   ### Critical Issues
+   - 🚨 [Security issue 1]
+   - ⚡ [Performance issue 1]
+   - 🐛 [Quality issue 1]
+   
+   ## Detailed Analysis
+   
+   ### 1. Project Structure (Score: X/15)
+   [Detailed analysis with findings]
+   
+   ### 2. Security Assessment (Score: X/20)
+   [Security findings and recommendations]
+   
+   ### 3. Performance & Scalability (Score: X/15)
+   [Performance analysis results]
+   
+   ### 4. Code Quality (Score: X/15)
+   [Maintainability metrics and findings]
+   
+   ### 5. Architecture Design (Score: X/15)
+   [Design pattern analysis]
+   
+   ### 6. DevOps Maturity (Score: X/10)
+   [Infrastructure and deployment analysis]
+   
+   ### 7. Testing & Reliability (Score: X/10)
+   [Test coverage and quality metrics]
+   
+   ## Recommendations
+   
+   ### Immediate Actions (P0)
+   1. [Critical security fix]
+   2. [Critical performance fix]
+   
+   ### Short-term Improvements (P1)
+   1. [Important enhancement]
+   2. [Quality improvement]
+   
+   ### Long-term Strategic (P2)
+   1. [Architecture evolution]
+   2. [Technology migration]
+   
+   ## Architecture Diagrams
+   
+   ### Current Architecture
+   ![[architecture-current.excalidraw]]
+   
+   ### Proposed Improvements
+   ![[architecture-proposed.excalidraw]]
+   
+   ## Risk Matrix
+   
+   | Risk | Impact | Probability | Mitigation |
+   |------|--------|-------------|------------|
+   | [Risk 1] | High | Medium | [Action] |
+   
+   ## Metrics Dashboard
+   
+   - **Code Coverage:** X%
+   - **Technical Debt:** X hours
+   - **Cyclomatic Complexity:** Average X
+   - **Dependencies:** X total (X outdated)
+   
+   ## Appendix
+   
+   ### File Statistics
+   - Total Files: X
+   - Lines of Code: X
+   - Languages: [List]
+   
+   ### Tool Versions
+   - [Tool 1]: vX.X
+   - [Tool 2]: vX.X
+   
+   ---
+   
+   *Generated by Claude Architecture Review Tool*
+   *Next Review Recommended: [Date + 3 months]*
+   ```
 
-if [[ $potential_creds -gt 0 ]]; then
-    echo -e "${RED}Potential credentials found${NC}"
-    security_issues+=("Potential hardcoded credentials detected")
-    recommendations+=("Move all credentials to environment variables or secure vaults")
-    add_score 0 20
-else
-    echo -e "${GREEN}None found${NC}"
-    add_score 20 20
-fi
+## Implementation Notes:
 
-# Check for unsafe practices
-echo -n "Checking for unsafe shell practices... "
-unsafe_practices=0
+- The analysis will scan the entire codebase systematically
+- Generate architecture diagrams using Excalidraw integration
+- Create actionable recommendations with priority levels
+- Include both quantitative metrics and qualitative insights
+- Save all outputs to Obsidian vault for tracking over time
+- Support comparison with previous reviews for trend analysis
 
-# Check for eval usage
-if find . -name "*.sh" -o -name "*.bash" 2>/dev/null | xargs grep "eval " 2>/dev/null | grep -v ".git" | grep -q .; then
-    unsafe_practices=$((unsafe_practices + 1))
-    security_issues+=("Uses of 'eval' found which can be dangerous")
-fi
+## Example Usage:
+```
+Command: atm-arch-review
+# or
+Command: atm-arch-review /path/to/project
 
-# Check for unquoted variables (simple check)
-unquoted_count=$(find . -name "*.sh" -o -name "*.bash" 2>/dev/null | xargs grep -E '\$[A-Za-z_]' 2>/dev/null | grep -v '"' | wc -l || echo 0)
-if [[ $unquoted_count -gt 20 ]]; then
-    unsafe_practices=$((unsafe_practices + 1))
-    security_issues+=("Many unquoted variables found - potential command injection risk")
-fi
+Output:
+Performing comprehensive architecture review...
+✓ Project structure analyzed
+✓ Security assessment complete
+✓ Performance analysis complete
+✓ Code quality metrics calculated
+✓ Architecture patterns identified
+✓ DevOps maturity assessed
+✓ Testing coverage analyzed
 
-if [[ $unsafe_practices -gt 0 ]]; then
-    echo -e "${YELLOW}Found security concerns${NC}"
-    add_score 10 20
-else
-    echo -e "${GREEN}Good practices observed${NC}"
-    add_score 20 20
-fi
+Generating architecture report...
+✓ Report saved to: ~/Documents/Obsidian/Development/claude-sessions/project/architecture-review-2024-01-15.md
+✓ Architecture diagrams created
 
-# Check file permissions
-echo -n "Checking file permissions... "
-world_writable=$(find . -type f -perm -002 ! -path "./.git/*" 2>/dev/null | wc -l || echo 0)
-if [[ $world_writable -gt 0 ]]; then
-    echo -e "${RED}Found $world_writable world-writable files${NC}"
-    security_issues+=("Found $world_writable world-writable files")
-    recommendations+=("Fix file permissions: find . -type f -perm -002 -exec chmod o-w {} +")
-    add_score 0 10
-else
-    echo -e "${GREEN}Good file permissions${NC}"
-    add_score 10 10
-fi
+Overall Score: 78/100 (B - Good)
 
-echo
+Top 3 Recommendations:
+1. 🚨 Remove hardcoded API keys in config.json
+2. ⚡ Optimize database queries in user service
+3. 🧪 Increase test coverage from 45% to 80%
 
-# 3. CODE QUALITY & MAINTAINABILITY
-echo -e "${PURPLE}📏 Code Quality & Maintainability${NC}"
-echo "================================"
-
-# Check for consistent style
-echo -n "Checking code consistency... "
-if [[ -f ".editorconfig" ]] || [[ -f ".prettierrc" ]] || [[ -f ".shellcheckrc" ]]; then
-    echo -e "${GREEN}Style configuration found${NC}"
-    add_score 10 10
-else
-    echo -e "${YELLOW}No style configuration${NC}"
-    recommendations+=("Add .editorconfig or tool-specific configs for consistent code style")
-    add_score 5 10
-fi
-
-# Function complexity analysis (simplified)
-echo -n "Analyzing function complexity... "
-complex_functions=0
-for file in $(find . \( -name "*.sh" -o -name "*.bash" \) ! -path "./.git/*" 2>/dev/null); do
-    if [[ -f "$file" ]]; then
-        # Check if any function is longer than 50 lines (approximate)
-        if awk '/^[[:alnum:]_]+\(\)/ {start=NR} /^}/ && start {if(NR-start>50) exit 1; start=0}' "$file" 2>/dev/null; then
-            :
-        else
-            complex_functions=$((complex_functions + 1))
-        fi
-    fi
-done
-
-if [[ $complex_functions -gt 0 ]]; then
-    echo -e "${YELLOW}Found $complex_functions complex functions${NC}"
-    recommendations+=("Refactor complex functions into smaller, focused functions")
-    add_score 5 10
-else
-    echo -e "${GREEN}Good function sizes${NC}"
-    add_score 10 10
-fi
-
-echo
-
-# 4. PERFORMANCE & SCALABILITY
-echo -e "${PURPLE}⚡ Performance & Scalability${NC}"
-echo "================================"
-
-# Check for performance antipatterns
-echo -n "Checking for performance issues... "
-perf_issues=0
-
-# Check for nested loops
-if find . -name "*.sh" -o -name "*.bash" 2>/dev/null | xargs grep -l "while.*do.*while.*do" 2>/dev/null | grep -q .; then
-    perf_issues=$((perf_issues + 1))
-    performance_issues+=("Nested loops found - potential O(n²) complexity")
-fi
-
-# Check for many find commands
-find_count=$(find . -name "*.sh" 2>/dev/null | xargs grep -c "find " 2>/dev/null | awk '{sum+=$1} END {print sum}' || echo 0)
-if [[ $find_count -gt 10 ]]; then
-    perf_issues=$((perf_issues + 1))
-    performance_issues+=("Many 'find' commands detected - consider caching results")
-fi
-
-if [[ $perf_issues -gt 0 ]]; then
-    echo -e "${YELLOW}Found performance concerns${NC}"
-    add_score 5 10
-else
-    echo -e "${GREEN}Good performance patterns${NC}"
-    add_score 10 10
-fi
-
-echo
-
-# 5. TESTING & RELIABILITY
-echo -e "${PURPLE}🧪 Testing & Reliability${NC}"
-echo "================================"
-
-# Check for tests
-test_files=$(find . \( -name "*test*" -o -name "*spec*" \) -name "*.sh" 2>/dev/null | wc -l || echo 0)
-if [[ $test_files -gt 0 ]]; then
-    echo -e "${GREEN}✓ Found $test_files test files${NC}"
-    add_score 15 15
-else
-    echo -e "${RED}✗ No test files found${NC}"
-    recommendations+=("Implement unit tests using bats-core or similar testing framework")
-    add_score 0 15
-fi
-
-# Check for error handling
-echo -n "Checking error handling... "
-set_e_count=$(find . \( -name "*.sh" -o -name "*.bash" \) 2>/dev/null | xargs grep -l "set -e" 2>/dev/null | wc -l || echo 0)
-if [[ $set_e_count -gt 2 ]]; then
-    echo -e "${GREEN}Good error handling${NC}"
-    add_score 10 10
-else
-    echo -e "${YELLOW}Limited error handling${NC}"
-    recommendations+=("Add 'set -e' and trap handlers for robust error handling")
-    add_score 5 10
-fi
-
-echo
-
-# 6. BEST PRACTICES
-echo -e "${PURPLE}✅ Best Practices Evaluation${NC}"
-echo "================================"
-
-# Check for documentation
-doc_count=$(find . -name "*.md" -o -name "*.txt" | grep -v ".git" | wc -l || echo 0)
-if [[ $doc_count -gt 2 ]]; then
-    echo -e "${GREEN}✓ Good documentation coverage${NC}"
-    add_score 10 10
-else
-    echo -e "${YELLOW}⚠ Limited documentation${NC}"
-    recommendations+=("Add comprehensive documentation")
-    add_score 5 10
-fi
-
-echo
-
-# PROJECT-SPECIFIC ANALYSIS
-if [[ -f "clair-sync" ]]; then
-    echo -e "${PURPLE}🔧 Clair-de-config Specific Analysis${NC}"
-    echo "======================================"
-    
-    # Check backup strategy
-    if [[ -d "backups" ]]; then
-        backup_count=$(find backups -type d -maxdepth 1 2>/dev/null | wc -l || echo 0)
-        if [[ $backup_count -gt 10 ]]; then
-            echo -e "${YELLOW}⚠ Many backups accumulated ($backup_count)${NC}"
-            recommendations+=("Implement backup rotation to prevent disk space issues")
-        else
-            echo -e "${GREEN}✓ Reasonable backup count${NC}"
-        fi
-    fi
-    
-    # Check for proper alias management
-    if [[ -f "aliases" ]] && grep -q "alias " aliases 2>/dev/null; then
-        alias_count=$(grep -c "^alias " aliases 2>/dev/null || echo 0)
-        echo -e "${GREEN}✓ Managing $alias_count aliases${NC}"
-    fi
-    
-    echo
-fi
-
-# FINAL REPORT
-echo -e "${BLUE}📋 Architecture Review Summary${NC}"
-echo "================================"
-
-# Calculate percentage score
-if [[ $max_score -gt 0 ]]; then
-    percentage=$((total_score * 100 / max_score))
-else
-    percentage=0
-fi
-
-# Determine grade
-if [[ $percentage -ge 90 ]]; then
-    grade="${GREEN}A${NC}"
-    grade_text="Excellent"
-elif [[ $percentage -ge 80 ]]; then
-    grade="${GREEN}B${NC}"
-    grade_text="Good"
-elif [[ $percentage -ge 70 ]]; then
-    grade="${YELLOW}C${NC}"
-    grade_text="Satisfactory"
-elif [[ $percentage -ge 60 ]]; then
-    grade="${YELLOW}D${NC}"
-    grade_text="Needs Improvement"
-else
-    grade="${RED}F${NC}"
-    grade_text="Poor"
-fi
-
-echo -e "Overall Score: ${total_score}/${max_score} (${percentage}%)"
-echo -e "Grade: ${grade} - ${grade_text}"
-echo
-
-# Display critical issues
-if [[ ${#security_issues[@]} -gt 0 ]]; then
-    echo -e "${RED}🚨 Security Issues:${NC}"
-    for issue in "${security_issues[@]}"; do
-        echo "   • $issue"
-    done
-    echo
-fi
-
-if [[ ${#performance_issues[@]} -gt 0 ]]; then
-    echo -e "${YELLOW}⚡ Performance Concerns:${NC}"
-    for issue in "${performance_issues[@]}"; do
-        echo "   • $issue"
-    done
-    echo
-fi
-
-# Display recommendations
-if [[ ${#recommendations[@]} -gt 0 ]]; then
-    echo -e "${BLUE}📌 Priority Recommendations:${NC}"
-    i=1
-    for rec in "${recommendations[@]}"; do
-        echo "   $i. $rec"
-        ((i++))
-    done
-    echo
-fi
-
-# Architecture insights
-echo -e "${PURPLE}🏗️  Architecture Insights:${NC}"
-if [[ $shell_files -gt 20 ]]; then
-    echo "   • Large shell-based project - consider modularization"
-fi
-if [[ $total_files -gt 100 ]]; then
-    echo "   • Growing codebase - ensure consistent structure"
-fi
-if [[ $directories -gt 20 ]]; then
-    echo "   • Complex directory structure - document the layout"
-fi
-echo "   • Shell-based configuration management tool"
-echo "   • Good use of git for version control"
-echo
-
-echo -e "${BLUE}💡 Next Steps:${NC}"
-echo "   1. Address security issues immediately"
-echo "   2. Implement missing tests"
-echo "   3. Fix high-priority recommendations"
-echo "   4. Schedule regular architecture reviews"
-
-echo
-echo -e "${GREEN}✨ Remember: Great architecture evolves through continuous improvement!${NC}"
+View full report in Obsidian for detailed analysis and diagrams.
+```

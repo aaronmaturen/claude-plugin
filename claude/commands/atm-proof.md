@@ -69,7 +69,10 @@ Analyze a code module as a mathematician/logician to create a formal finite stat
    - Save to Obsidian vault with proper linking
    - Generate both `.excalidraw` file and embedded markdown
 
-7. **Generate Report with Visuals**
+7. **Generate Report in Obsidian Vault**
+   - Create analysis document in: `${OBSIDIAN_VAULT}/claude-sessions/${PARENT_DIR}/${PROJECT_NAME}/`
+   - Filename: `proof-${MODULE_NAME}-${DATE}.md`
+   - Content structure:
    ```markdown
    # Formal Analysis of [Module Name]
    
@@ -111,6 +114,12 @@ Command: atm-proof src/utils/parser.ts
 
 Output:
 Analyzing module: src/utils/parser.ts
+Creating formal analysis in Obsidian vault...
+
+Generated files:
+- Analysis report: ~/Documents/Obsidian/Development/claude-sessions/project-name/proof-parser-2024-01-15.md
+- FSM diagram: ~/Documents/Obsidian/Development/claude-sessions/diagrams/project-name/parser-fsm-2024-01-15.excalidraw
+- Edge case diagrams: ~/Documents/Obsidian/Development/claude-sessions/diagrams/project-name/edge-case-*.excalidraw
 
 ## Finite State Machine Model
 States: {INIT, PARSING, ERROR, COMPLETE}
@@ -236,12 +245,27 @@ The diagram files should be automatically saved to the same Obsidian vault struc
 ### Implementation Note:
 When running atm-proof, Claude will:
 1. Analyze the code module mathematically
-2. Generate Excalidraw diagrams using the helper script:
+2. Get project information from git context
+3. Create Obsidian vault directory structure if needed:
+   ```bash
+   OBSIDIAN_VAULT="${OBSIDIAN_VAULT:-$HOME/Documents/Obsidian/Development}"
+   PROJECT_NAME=$(basename $(git rev-parse --show-toplevel 2>/dev/null) || echo "unknown")
+   PARENT_DIR=$(basename $(dirname $(git rev-parse --show-toplevel 2>/dev/null)) || echo "projects")
+   
+   REPORT_DIR="${OBSIDIAN_VAULT}/claude-sessions/${PARENT_DIR}/${PROJECT_NAME}"
+   DIAGRAM_DIR="${OBSIDIAN_VAULT}/claude-sessions/diagrams/${PROJECT_NAME}"
+   
+   mkdir -p "$REPORT_DIR" "$DIAGRAM_DIR"
+   ```
+4. Generate Excalidraw diagrams using the helper script:
    ```bash
    ~/.claude/hooks/excalidraw-generator.sh fsm "module-name" "project-name" "STATE1,STATE2,STATE3" "transitions"
    ```
-3. Save diagrams to: `{OBSIDIAN_VAULT}/claude-sessions/diagrams/{project}/`
-4. Create analysis report in: `{OBSIDIAN_VAULT}/claude-sessions/{parent}/{project}/`
-5. Link diagrams in the report using: `![[diagram-name.excalidraw]]`
+5. Save the analysis report as markdown in Obsidian:
+   ```bash
+   REPORT_FILE="${REPORT_DIR}/proof-${MODULE_NAME}-$(date +%Y-%m-%d-%H%M).md"
+   echo "$ANALYSIS_CONTENT" > "$REPORT_FILE"
+   ```
+6. Link diagrams in the report using: `![[diagram-name.excalidraw]]`
 
-The visual diagrams will be viewable and editable in Obsidian with the Excalidraw plugin.
+The analysis will be immediately available in your Obsidian vault with all diagrams properly linked and viewable.

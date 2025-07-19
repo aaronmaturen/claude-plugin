@@ -4,7 +4,14 @@
 
 # Determine the directory where clair-de-config is installed
 # This file should be sourced using its full path from the repo
-CLAIR_CONFIG_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [[ -n "$BASH_VERSION" ]]; then
+    CLAIR_CONFIG_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+elif [[ -n "$ZSH_VERSION" ]]; then
+    CLAIR_CONFIG_HOME="$(cd "$(dirname "${(%):-%N}")" && pwd)"
+else
+    # Fallback for other shells
+    CLAIR_CONFIG_HOME="$(cd "$(dirname "$0")" && pwd)"
+fi
 
 export CLAIR_CONFIG_HOME
 
@@ -35,7 +42,9 @@ _clair_say() {
 }
 
 # Quick status check on shell startup (silent unless issues)
-if _clair_in_git_repo; then
+# Only show warning if CLAIR_QUIET is not set
+# You can set CLAIR_QUIET=1 in your shell config to disable this warning
+if [[ -z "$CLAIR_QUIET" ]] && _clair_in_git_repo; then
     # Check if there are uncommitted changes
     if [[ -n $(cd "$CLAIR_CONFIG_HOME" && git status --porcelain 2>/dev/null) ]]; then
         _clair_say warn "clair-de-config has uncommitted changes. Run 'clair-status' for details."
