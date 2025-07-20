@@ -185,6 +185,11 @@ create_symlink "$SCRIPT_DIR/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md" "Claude 
 create_symlink "$SCRIPT_DIR/claude/hooks" "$HOME/.claude/hooks" "Claude hooks"
 create_symlink "$SCRIPT_DIR/claude/commands" "$HOME/.claude/commands" "Claude commands"
 
+# Create symlink for Serena configuration if directory exists
+if [[ -d "$SCRIPT_DIR/serena" ]]; then
+    create_symlink "$SCRIPT_DIR/serena" "$HOME/.serena" "Serena configuration"
+fi
+
 # Sync MCP servers
 if [[ -x "$SCRIPT_DIR/bin/clair-mcp" ]]; then
     say "Syncing MCP servers..."

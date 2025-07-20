@@ -2,7 +2,10 @@
 
 Analyze staged changes and generate a commit message with JIRA ticket number from the current branch.
 
-**IMPORTANT**: DO NOT COMMIT - only output the commit message and copy it to clipboard
+**IMPORTANT**: 
+- DO NOT COMMIT - only output the commit message and copy it to clipboard
+- DO NOT include any "Co-authored-by: Claude" or emoji signatures
+- Generate clean, professional commit messages only
 
 ## Steps:
 
