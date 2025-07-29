@@ -21,6 +21,10 @@ Analyze staged changes and generate a commit message with JIRA ticket number fro
 
 2. **Analyze staged changes**
    - Run `git diff --cached` to see only staged changes
+   - If nothing is staged:
+     - Assume user wants to commit all modified files
+     - Run `git diff` to see all unstaged changes
+     - Run `git status --short` to see all modified/new files
    - If this is the first commit (no HEAD exists):
      - Run `git diff --cached --stat` to see what files will be committed
    - For context on branch changes:
@@ -28,7 +32,22 @@ Analyze staged changes and generate a commit message with JIRA ticket number fro
      - If on feature branch, optionally show: `git log --oneline main..HEAD` (if main exists)
    - Focus on what's actually being committed in THIS commit
 
-3. **Generate commit message format:**
+3. **Check for new TODO comments**
+   - Run `git diff --cached` to scan staged changes for new TODO comments
+   - Look for patterns like:
+     - `TODO:`
+     - `TODO(`
+     - `// TODO`
+     - `# TODO`
+     - `/* TODO`
+   - If new TODOs are found:
+     - Display the new TODO comments and their locations
+     - Ask explicitly: "New TODO comments detected. Do you want to continue with the commit? (y/n)"
+     - If user says no, suggest they address the TODOs first
+     - If user says yes, proceed with commit message generation
+   - If no new TODOs found, continue normally
+
+4. **Generate commit message format:**
    ```
    [PRO-####] Brief description (50 chars total)
 
@@ -44,7 +63,7 @@ Analyze staged changes and generate a commit message with JIRA ticket number fro
    and any important context. Wrap at 72 characters.
    ```
 
-4. **Copy to clipboard:**
+5. **Copy to clipboard:**
    - After generating the commit message, use `pbcopy` to copy it to clipboard
    - Display the commit message to the user
    - Add a note that it has been copied to clipboard
@@ -96,5 +115,5 @@ better testability and reuse across services.
 - **Initial commit**: Use "Initial commit" or "Initialize repository with [description]"
 - **On main branch**: No ticket prefix unless branch name contains PRO-#### or BUG-###
 - **Sequential commits**: Focus only on staged changes, not entire branch diff
-- **Empty diff --cached**: Alert user that no changes are staged
+- **Nothing staged**: Analyze all modified files (assume user will stage all)
 - **Feature branches without tickets**: Generate normal commit message without prefix

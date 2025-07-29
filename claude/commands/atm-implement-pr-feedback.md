@@ -59,7 +59,7 @@ Analyze GitHub PR comments and implement suggested changes.
    - Implement each approved feedback item
    - Mark todos as completed after each change
    - Run tests after modifications
-   - Stage changes and prepare commit messages (but DO NOT commit)
+   - Stage changes and prepare commit messages (but DO NOT commit - this is always manual)
 
 9. **Prepare Summary for User**
    - Generate a summary of all implemented changes
@@ -85,7 +85,7 @@ Analyze GitHub PR comments and implement suggested changes.
      - Run tests locally
      - Push when ready: `git push`
      - Post the summary comment on the PR
-   - **IMPORTANT**: DO NOT push changes - this is always a manual process
+   - **IMPORTANT**: DO NOT commit or push changes - these are always manual processes
 
 ## Example Usage:
 ```

@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Generate a random 8 character string
+random_suffix=$(openssl rand -hex 4)
+
+# Get the current directory name
+current_dir=$(basename "$(pwd)")
+
+# Container name
+container_name="claude-${current_dir}-${random_suffix}"
+
+# Check if Docker is running
+if ! docker info >/dev/null 2>&1; then
+    echo "Error: Docker is not running. Please start Docker and try again."
+    exit 1
+fi
+
+# Check if required directories exist
+if [ ! -d "$HOME/.claude" ]; then
+    echo "Warning: ~/.claude directory not found"
+fi
+
+if [ ! -d "$HOME/.serena" ]; then
+    echo "Warning: ~/.serena directory not found"
+fi
+
+echo "Starting dangerzone container: $container_name"
+echo "Mapping current directory to: /workplace/$current_dir"
+echo "Installing Claude CLI..."
+
+# Run the container
+docker run -it --rm \
+    --name "$container_name" \
+    -v "$(pwd):/workplace/$current_dir" \
+    -v "$HOME/.claude:/root/.claude" \
+    -v "$HOME/.serena:/root/.serena" \
+    -w "/workplace/$current_dir" \
+    node:alpine \
+    /bin/sh -c "npm install -g @anthropic-ai/claude-code && exec /usr/local/bin/claude"
+
+echo "Dangerzone session ended"

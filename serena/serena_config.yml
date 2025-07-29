@@ -20,7 +20,7 @@ web_dashboard: true
 # shows Serena's current session logs - as an alternative to the GUI log window which
 # is supported on all platforms.
 
-web_dashboard_open_on_launch: true
+web_dashboard_open_on_launch: false
 # whether to open a browser window with the web dashboard when Serena starts (provided that web_dashboard
 # is enabled). If set to False, you can still open the dashboard manually by navigating to
 # http://localhost:24282/dashboard/ in your web browser (24282 = 0x5EDA, SErena DAshboard).
@@ -70,4 +70,9 @@ token_count_estimator: TIKTOKEN_GPT4O
 # instruct Serena to activate the project by its path for first-time activation.
 # NOTE: Make sure there are no name collisions in the names of registered projects.
 projects:
+- /Users/aaron/Projects/aaronmaturen/devtrail
+- /Users/aaron/Projects/aaronmaturen/jeeves
+- /Users/aaron/Projects/aaronmaturen/otis
+- /Users/aaron/Projects/presencelearning/api-workplace
 - /Users/aaron/Projects/presencelearning/edu-clients
+- /Users/aaron/Projects/presencelearning/presence-data-seeder

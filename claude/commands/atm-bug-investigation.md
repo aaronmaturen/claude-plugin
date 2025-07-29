@@ -4,12 +4,112 @@ Investigate a JIRA bug using the 5 Whys technique to identify root causes across
 
 **Bug ID:** $ARGUMENTS (JIRA issue key, e.g., PROJ-1234)
 
+## Input Handling
+
+If no JIRA bug ID is provided as an argument, the command will prompt you to describe the bug you're investigating:
+
+**Manual Investigation Mode:** When no JIRA ticket exists, the investigation will:
+- Skip JIRA data fetching (steps 2-3)
+- Use your bug description for the initial problem analysis
+- Create a manual bug ID based on description keywords
+- Follow the same 5 Whys methodology for root cause analysis
+- Generate the same comprehensive Obsidian documentation
+
 ## Investigation Process:
 
-### 1. **Fetch Bug Details from JIRA**
+### 0. **Handle Input and Setup**
 ```bash
-# Get bug details using jira CLI
+# Check if bug ID was provided as argument
+if [[ -z "$ARGUMENTS" ]]; then
+    echo "🐛 No JIRA bug ID provided"
+    echo ""
+    echo "📝 Please describe the bug you're investigating:"
+    echo "   - What is the issue/problem you're seeing?"
+    echo "   - When did you first notice it?"
+    echo "   - What steps reproduce the problem?"
+    echo "   - What should happen vs what actually happens?"
+    echo "   - Any error messages or symptoms?"
+    echo "   - Which parts of the system seem affected?"
+    echo ""
+    echo "💡 Once you provide the description, I'll help you:"
+    echo "   1. Create a structured investigation plan"
+    echo "   2. Perform root cause analysis using 5 Whys"
+    echo "   3. Search through relevant code/logs"
+    echo "   4. Generate an investigation report in Obsidian"
+    echo ""
+    echo "🔍 Please share your bug description and I'll get started!"
+    exit 0
+fi
+
+# If we have a bug ID, continue with JIRA investigation
 BUG_ID="$ARGUMENTS"
+echo "🎯 Investigating JIRA bug: $BUG_ID"
+```
+
+### 1. **Check for Previous Investigation Findings**
+```bash
+# Setup Obsidian vault structure and check for existing investigation
+OBSIDIAN_VAULT="${OBSIDIAN_VAULT:-$HOME/Documents/Obsidian/Development}"
+BUG_DIR="${OBSIDIAN_VAULT}/bugs/${BUG_ID}"
+REPORT_FILE="${BUG_DIR}/investigation.md"
+TIMELINE_FILE="${BUG_DIR}/timeline.md"
+RECOMMENDATIONS_FILE="${BUG_DIR}/recommendations.md"
+
+# Check if we have previous findings for this bug
+if [[ -f "$REPORT_FILE" ]]; then
+    echo "🔍 Found previous investigation for $BUG_ID"
+    echo "📁 Location: $BUG_DIR"
+    echo ""
+    echo "=== Previous Investigation Summary ==="
+    
+    # Extract key information from previous investigation
+    if grep -q "## Executive Summary" "$REPORT_FILE"; then
+        echo "📋 Previous Findings:"
+        sed -n '/## Executive Summary/,/## Bug Details/p' "$REPORT_FILE" | head -n -1
+        echo ""
+    fi
+    
+    if grep -q "## Root Cause Summary" "$REPORT_FILE"; then
+        echo "🎯 Previous Root Cause Analysis:"
+        sed -n '/## Root Cause Summary/,/## Code Analysis/p' "$REPORT_FILE" | head -n -1
+        echo ""
+    fi
+    
+    # Check investigation status
+    LAST_MODIFIED=$(stat -f "%Sm" -t "%Y-%m-%d %H:%M" "$REPORT_FILE" 2>/dev/null || date -r "$REPORT_FILE" "+%Y-%m-%d %H:%M" 2>/dev/null || echo "Unknown")
+    echo "📅 Last Investigation: $LAST_MODIFIED"
+    
+    # Check if there are action items remaining
+    if grep -q "Action Items" "$REPORT_FILE"; then
+        echo "📝 Outstanding Action Items:"
+        grep -A 10 "### Action Items" "$REPORT_FILE" | grep "^- \[ \]" || echo "   (All completed or none found)"
+        echo ""
+    fi
+    
+    # Ask Claude if it wants to continue from previous findings or start fresh
+    echo "==========================================="
+    echo "💭 Claude: Based on previous investigation findings above, I can either:"
+    echo "   A) Continue from where we left off and update the existing investigation"
+    echo "   B) Start a fresh investigation (previous findings will be backed up)"
+    echo ""
+    echo "📖 Previous investigation available at: $REPORT_FILE"
+    echo "📈 Timeline available at: $TIMELINE_FILE"
+    echo "💡 Recommendations available at: $RECOMMENDATIONS_FILE"
+    echo ""
+    echo "🤔 Please specify how you'd like to proceed with this investigation."
+    echo "   (The previous context will inform my analysis either way)"
+    echo ""
+else
+    echo "🆕 No previous investigation found for $BUG_ID"
+    echo "📁 Will create new investigation at: $BUG_DIR"
+    echo "🔍 Starting fresh investigation..."
+    echo ""
+fi
+```
+
+### 2. **Fetch Bug Details from JIRA**
+```bash
+# Get bug details using jira CLI (BUG_ID already set from input handling)
 jira issue view "$BUG_ID" --output json > /tmp/bug_details.json
 
 # Extract key information
@@ -35,7 +135,7 @@ if [[ "$COMPONENTS" =~ "Backend" ]] || [[ "$COMPONENTS" =~ "API" ]] || [[ "$LABE
 fi
 ```
 
-### 2. **Initial Problem Analysis**
+### 3. **Initial Problem Analysis**
 - Parse bug description and symptoms
 - Identify affected components/features (Frontend vs Backend)
 - Determine when the issue started occurring
@@ -43,7 +143,7 @@ fi
 - Review any error messages or logs mentioned
 - Identify if it's a full-stack issue requiring both repos
 
-### 3. **Multi-Repository Investigation Strategy**
+### 4. **Multi-Repository Investigation Strategy**
 
 #### Local Repository Check
 ```bash
@@ -96,7 +196,7 @@ fi
   - Browser console logs (frontend)
   - Server logs (backend)
 
-### 4. **Cross-Repository Analysis**
+### 5. **Cross-Repository Analysis**
 
 #### Frontend (edu-clients) Investigation:
 - **User Actions**: What user action triggers the bug?
@@ -119,7 +219,7 @@ fi
 - **Timing**: Race conditions or timeout issues?
 - **Version Mismatch**: Different API versions?
 
-### 5. **5 Whys Analysis Framework (Full-Stack Aware)**
+### 6. **5 Whys Analysis Framework (Full-Stack Aware)**
 
 #### Why #1: Direct Cause
 **Question**: Why did this bug occur?
@@ -158,7 +258,7 @@ fi
 - Check documentation and knowledge sharing
 - Examine resource allocation and priorities
 
-### 5. **Evidence Collection**
+### 7. **Evidence Collection**
 For each "Why", collect:
 - Code snippets showing the issue
 - Git commits related to the problem
@@ -166,21 +266,25 @@ For each "Why", collect:
 - Documentation gaps
 - Process breakdowns
 
-### 6. **Generate Obsidian Report**
+### 8. **Generate/Update Obsidian Report**
 
 ```bash
-# Setup Obsidian vault structure
-OBSIDIAN_VAULT="${OBSIDIAN_VAULT:-$HOME/Documents/Obsidian/Development}"
-BUG_DIR="${OBSIDIAN_VAULT}/bugs/${BUG_ID}"
+# Vault structure already set up in step 0
 mkdir -p "$BUG_DIR"
 
-# Create main investigation report
-REPORT_FILE="${BUG_DIR}/investigation.md"
-TIMELINE_FILE="${BUG_DIR}/timeline.md"
-RECOMMENDATIONS_FILE="${BUG_DIR}/recommendations.md"
+# If continuing from previous investigation, backup the existing files
+if [[ -f "$REPORT_FILE" ]] && [[ "$CONTINUE_FROM_PREVIOUS" = true ]]; then
+    BACKUP_DIR="${BUG_DIR}/backups/$(date +%Y%m%d_%H%M%S)"
+    mkdir -p "$BACKUP_DIR"
+    cp "$REPORT_FILE" "$BACKUP_DIR/investigation.md" 2>/dev/null || true
+    cp "$TIMELINE_FILE" "$BACKUP_DIR/timeline.md" 2>/dev/null || true
+    cp "$RECOMMENDATIONS_FILE" "$BACKUP_DIR/recommendations.md" 2>/dev/null || true
+    echo "📁 Previous investigation backed up to: $BACKUP_DIR"
+fi
 ```
 
 #### Main Report Structure:
+*(Note: If continuing from previous investigation, update existing sections and add new findings)*
 ```markdown
 # Bug Investigation: [[BUG_ID]]
 
@@ -191,6 +295,11 @@ RECOMMENDATIONS_FILE="${BUG_DIR}/recommendations.md"
 **Status:** [Current Status]
 
 ## Executive Summary
+
+### Investigation History
+- **Initial Investigation:** [Date of first analysis]
+- **Previous Updates:** [List of update dates if continuing from previous]
+- **Current Session:** [Current investigation date]
 
 ### The Problem
 [Clear description of what went wrong]
@@ -384,10 +493,20 @@ graph LR
 - [ ] Schedule architecture review
 - [ ] Create team training session
 
+## Investigation Updates
+*(This section tracks updates when continuing from previous investigations)*
+
+### [Current Date] - Investigation Update
+- **New findings:** [What was discovered in this session]
+- **Updated analysis:** [Changes to previous conclusions]
+- **Additional evidence:** [New code/logs/traces found]
+- **Status change:** [Any status updates]
+
 ## Related Issues
 - Similar bugs: [[BUG-123]], [[BUG-456]]
 - Related features: [[Feature-X]]
 - Dependencies: [[System-Y]]
+- Previous investigations: [[investigation-backup-links]]
 
 ## Attachments
 - [[error-logs.txt]]
@@ -486,7 +605,7 @@ For similar features, always check:
 - [ ] Security implications considered
 ```
 
-### 7. **Create Visual Diagrams**
+### 9. **Create Visual Diagrams**
 Generate Excalidraw diagrams for:
 - System architecture showing bug location
 - Data flow highlighting failure point
@@ -498,7 +617,46 @@ Generate Excalidraw diagrams for:
 Command: atm-bug-investigation PROJ-1234
 
 Output:
-Fetching bug details from JIRA...
+🔍 Found previous investigation for PROJ-1234
+📁 Location: ~/Documents/Obsidian/Development/bugs/PROJ-1234
+
+=== Previous Investigation Summary ===
+📋 Previous Findings:
+### The Problem
+User data loss occurring on form submission in the user profile section
+
+### Root Cause  
+Siloed development with missing error contract between frontend/backend systems
+
+🎯 Previous Root Cause Analysis:
+### Technical Root Cause
+Missing error handling in both frontend API client and backend controller
+
+### Process Root Cause
+Frontend and backend teams not coordinating on API error contracts
+
+📅 Last Investigation: 2024-01-15 14:30
+📝 Outstanding Action Items:
+- [ ] Implement structured error responses in backend
+- [ ] Add retry logic to frontend API client
+- [ ] Create cross-team API design review process
+
+===========================================
+💭 Claude: Based on previous investigation findings above, I can either:
+   A) Continue from where we left off and update the existing investigation
+   B) Start a fresh investigation (previous findings will be backed up)
+
+📖 Previous investigation available at: ~/Documents/Obsidian/Development/bugs/PROJ-1234/investigation.md
+📈 Timeline available at: ~/Documents/Obsidian/Development/bugs/PROJ-1234/timeline.md
+💡 Recommendations available at: ~/Documents/Obsidian/Development/bugs/PROJ-1234/recommendations.md
+
+🤔 Please specify how you'd like to proceed with this investigation.
+   (The previous context will inform my analysis either way)
+
+Continuing from previous investigation...
+📁 Previous investigation backed up to: ~/Documents/Obsidian/Development/bugs/PROJ-1234/backups/20240120_143000
+
+Fetching updated bug details from JIRA...
 ✓ Bug retrieved: "User data loss on form submission"
 ✓ Priority: High
 ✓ Components: Frontend, API
