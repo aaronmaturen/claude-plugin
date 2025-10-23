@@ -1,11 +1,17 @@
 {
   "name": "aaronmaturen-plugins",
-  "displayName": "Aaron Maturen's Claude Plugins",
-  "description": "Professional development workflow plugins with JIRA integration and MCP servers",
+  "owner": {
+    "name": "Aaron Maturen",
+    "email": "aaron@example.com",
+    "url": "https://github.com/aaronmaturen"
+  },
+  "metadata": {
+    "description": "Professional development workflow plugins with JIRA integration and MCP servers",
+    "version": "1.0.0"
+  },
   "plugins": [
     {
       "name": "clair-de-config",
-      "displayName": "Clair de Config",
       "description": "Professional development workflow plugin with JIRA integration, PR review tools, and comprehensive MCP server configuration",
       "version": "1.0.0",
       "author": {
