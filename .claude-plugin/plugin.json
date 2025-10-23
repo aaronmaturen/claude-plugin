@@ -1,0 +1,34 @@
+{
+  "name": "clair-de-config",
+  "version": "1.0.0",
+  "description": "Professional development workflow plugin with JIRA integration, PR review tools, and comprehensive MCP server configuration",
+  "author": {
+    "name": "Aaron Maturen",
+    "url": "https://github.com/aaronmaturen"
+  },
+  "homepage": "https://github.com/aaronmaturen/clair-de-config",
+  "repository": "https://github.com/aaronmaturen/clair-de-config",
+  "license": "MIT",
+  "keywords": [
+    "workflow",
+    "jira",
+    "git",
+    "pr-review",
+    "commit-messages",
+    "scaffolding",
+    "mcp",
+    "context7",
+    "serena"
+  ],
+  "commands": "./commands/",
+  "mcpServers": {
+    "Context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    },
+    "serena": {
+      "command": "uvx",
+      "args": ["--from", "git+https://github.com/oraios/serena", "serena-mcp-server"]
+    }
+  }
+}

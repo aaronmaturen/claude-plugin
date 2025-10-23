@@ -1,0 +1,32 @@
+{
+  "name": "aaronmaturen-plugins",
+  "displayName": "Aaron Maturen's Claude Plugins",
+  "description": "Professional development workflow plugins with JIRA integration and MCP servers",
+  "plugins": [
+    {
+      "name": "clair-de-config",
+      "displayName": "Clair de Config",
+      "description": "Professional development workflow plugin with JIRA integration, PR review tools, and comprehensive MCP server configuration",
+      "version": "1.0.0",
+      "author": {
+        "name": "Aaron Maturen",
+        "url": "https://github.com/aaronmaturen"
+      },
+      "source": {
+        "source": "github",
+        "repo": "aaronmaturen/clair-de-config"
+      },
+      "keywords": [
+        "workflow",
+        "jira",
+        "git",
+        "pr-review",
+        "commit-messages",
+        "scaffolding",
+        "mcp",
+        "context7",
+        "serena"
+      ]
+    }
+  ]
+}
