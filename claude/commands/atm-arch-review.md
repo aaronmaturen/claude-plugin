@@ -75,18 +75,18 @@ Perform a thorough architectural analysis of the codebase, evaluating security, 
 
 ## Output Format:
 
-### Generate Obsidian Architecture Report
+### Generate Architecture Report
 
-1. **Create report in Obsidian vault**:
+1. **Create report**:
    ```bash
-   OBSIDIAN_VAULT="${OBSIDIAN_VAULT:-$HOME/Documents/Obsidian/Development}"
+   REPORT_BASE="${REPORT_BASE:-$HOME/Documents/technical-analysis}"
    PROJECT_NAME=$(basename $(git rev-parse --show-toplevel 2>/dev/null) || echo "unknown")
    PARENT_DIR=$(basename $(dirname $(git rev-parse --show-toplevel 2>/dev/null)) || echo "projects")
    DATE=$(date +%Y-%m-%d-%H%M)
-   
-   REPORT_DIR="${OBSIDIAN_VAULT}/claude-sessions/${PARENT_DIR}/${PROJECT_NAME}"
+
+   REPORT_DIR="${REPORT_BASE}/architecture/${PARENT_DIR}/${PROJECT_NAME}"
    mkdir -p "$REPORT_DIR"
-   
+
    REPORT_FILE="${REPORT_DIR}/architecture-review-${DATE}.md"
    ```
 
@@ -191,10 +191,10 @@ Perform a thorough architectural analysis of the codebase, evaluating security, 
 ## Implementation Notes:
 
 - The analysis will scan the entire codebase systematically
-- Generate architecture diagrams using Excalidraw integration
+- Generate architecture diagrams
 - Create actionable recommendations with priority levels
 - Include both quantitative metrics and qualitative insights
-- Save all outputs to Obsidian vault for tracking over time
+- Save all outputs to report directory for tracking over time
 - Support comparison with previous reviews for trend analysis
 
 ## Example Usage:
@@ -214,7 +214,7 @@ Performing comprehensive architecture review...
 ✓ Testing coverage analyzed
 
 Generating architecture report...
-✓ Report saved to: ~/Documents/Obsidian/Development/claude-sessions/project/architecture-review-2024-01-15.md
+✓ Report saved to: ~/Documents/technical-analysis/architecture/projects/project/architecture-review-2024-01-15.md
 ✓ Architecture diagrams created
 
 Overall Score: 78/100 (B - Good)
@@ -224,5 +224,5 @@ Top 3 Recommendations:
 2. ⚡ Optimize database queries in user service
 3. 🧪 Increase test coverage from 45% to 80%
 
-View full report in Obsidian for detailed analysis and diagrams.
+View full report for detailed analysis and diagrams.
 ```

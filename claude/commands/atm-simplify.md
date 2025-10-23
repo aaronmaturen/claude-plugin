@@ -125,18 +125,18 @@ Optimizes dependencies and coupling.
 
 ## Output Format:
 
-### Generate Simplification Report in Obsidian
+### Generate Simplification Report
 
 1. **Create report structure**:
    ```bash
-   OBSIDIAN_VAULT="${OBSIDIAN_VAULT:-$HOME/Documents/Obsidian/Development}"
+   REPORT_BASE="${REPORT_BASE:-$HOME/Documents/technical-analysis}"
    PROJECT_NAME=$(basename $(git rev-parse --show-toplevel 2>/dev/null) || echo "unknown")
    PARENT_DIR=$(basename $(dirname $(git rev-parse --show-toplevel 2>/dev/null)) || echo "projects")
    DATE=$(date +%Y-%m-%d-%H%M)
-   
-   REPORT_DIR="${OBSIDIAN_VAULT}/claude-sessions/${PARENT_DIR}/${PROJECT_NAME}"
+
+   REPORT_DIR="${REPORT_BASE}/code-analysis/${PARENT_DIR}/${PROJECT_NAME}"
    mkdir -p "$REPORT_DIR"
-   
+
    REPORT_FILE="${REPORT_DIR}/simplification-analysis-${DATE}.md"
    ```
 
@@ -327,7 +327,7 @@ Optimizes dependencies and coupling.
    - Prioritize by impact and effort
    - Generate unified recommendations
 
-4. **Save to Obsidian**:
+4. **Save Report**:
    - Create comprehensive report
    - Include code examples
    - Add visual diagrams where helpful
@@ -361,7 +361,7 @@ Results Summary:
 
 Aggregating findings...
 Generating simplification report...
-✓ Report saved to: ~/Documents/Obsidian/Development/claude-sessions/project/simplification-analysis-2024-01-15.md
+✓ Report saved to: ~/Documents/technical-analysis/code-analysis/projects/project/simplification-analysis-2024-01-15.md
 
 Summary:
 - Complexity Score: 72/100 (Moderate)
@@ -369,7 +369,7 @@ Summary:
 - Bundle size reduction: 1.1MB
 - 15 high-priority simplifications identified
 
-View full report in Obsidian for detailed recommendations.
+View full report for detailed recommendations.
 ```
 
 ## Notes:

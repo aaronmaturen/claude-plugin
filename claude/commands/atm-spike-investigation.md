@@ -1,6 +1,6 @@
 # Spike Investigation - Technical Research & Analysis
 
-Investigate a technical spike by gathering requirements, evaluating the codebase with Serena, researching libraries with Context7, performing deep analysis, and creating a comprehensive report in Obsidian.
+Investigate a technical spike by gathering requirements, evaluating the codebase with Serena, researching libraries with Context7, performing deep analysis, and creating a comprehensive report.
 
 **Spike Topic:** $ARGUMENTS (Description of the spike, e.g., "React 19 migration feasibility" or "GraphQL implementation options")
 
@@ -8,11 +8,11 @@ Investigate a technical spike by gathering requirements, evaluating the codebase
 
 ### 0. **Check for Previous Spike Analysis**
 ```bash
-# Setup Obsidian vault structure and check for existing analysis
-OBSIDIAN_VAULT="${OBSIDIAN_VAULT:-$HOME/Documents/Obsidian/Development}"
+# Setup report directory structure and check for existing analysis
+REPORT_BASE="${REPORT_BASE:-$HOME/Documents/technical-analysis}"
 SPIKE_TOPIC="$ARGUMENTS"
 SPIKE_ID=$(echo "$SPIKE_TOPIC" | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]' | sed 's/--*/-/g' | sed 's/^-\|-$//g')
-SPIKE_DIR="${OBSIDIAN_VAULT}/spikes/${SPIKE_ID}"
+SPIKE_DIR="${REPORT_BASE}/spikes/${SPIKE_ID}"
 REPORT_FILE="${SPIKE_DIR}/analysis.md"
 RESEARCH_FILE="${SPIKE_DIR}/research.md"
 RECOMMENDATIONS_FILE="${SPIKE_DIR}/recommendations.md"
@@ -72,6 +72,34 @@ fi
 ```bash
 # Create initial structure
 mkdir -p "$SPIKE_DIR"
+
+# Check if spike topic references a Jira ticket
+JIRA_KEY_PATTERN="[A-Z]{2,}-[0-9]+"
+if echo "$SPIKE_TOPIC" | grep -qE "$JIRA_KEY_PATTERN"; then
+    JIRA_KEY=$(echo "$SPIKE_TOPIC" | grep -oE "$JIRA_KEY_PATTERN" | head -1)
+    echo "🎫 Found Jira reference: $JIRA_KEY"
+    echo "📋 Fetching Jira ticket details..."
+    
+    # Try to get Jira ticket information
+    if command -v jira >/dev/null 2>&1; then
+        echo "🔍 Retrieving Jira ticket: $JIRA_KEY"
+        jira issue view "$JIRA_KEY" 2>/dev/null && JIRA_CONTEXT_FOUND=true || JIRA_CONTEXT_FOUND=false
+        
+        if [[ "$JIRA_CONTEXT_FOUND" = true ]]; then
+            echo ""
+            echo "✅ Jira context retrieved successfully!"
+            echo "📝 I'll incorporate ticket details into the spike requirements."
+            echo ""
+        else
+            echo "⚠️  Could not access Jira ticket $JIRA_KEY"
+            echo "   (This is okay - we'll gather requirements interactively)"
+            echo ""
+        fi
+    else
+        echo "⚠️  Jira CLI not available - continuing without ticket context"
+        echo ""
+    fi
+fi
 
 # Interactive requirements gathering
 echo "🎯 SPIKE INVESTIGATION: $SPIKE_TOPIC"
@@ -214,7 +242,7 @@ echo "7. Weight trade-offs and make recommendation"
 echo ""
 ```
 
-### 6. **Generate Comprehensive Obsidian Report**
+### 6. **Generate Comprehensive Report**
 
 ```bash
 # Create comprehensive spike analysis report
@@ -258,6 +286,24 @@ fi
 - **Timeline:** [Recommended timeline]
 
 ## Spike Requirements
+
+### Jira Ticket Context
+*(Auto-populated if Jira ticket detected in spike topic)*
+**Ticket:** [JIRA-KEY] - [Ticket Title]
+**Reporter:** [Reporter Name]
+**Assignee:** [Current Assignee]
+**Priority:** [Ticket Priority]
+**Status:** [Current Status]
+
+**Description:**
+[Ticket description from Jira]
+
+**Acceptance Criteria:**
+[Acceptance criteria from Jira ticket]
+
+**Related Tickets:**
+- [LINK-1] - [Related ticket title]
+- [LINK-2] - [Related ticket title]
 
 ### Business Context
 **Problem Statement:** [What problem are we solving?]
@@ -717,8 +763,8 @@ Generate diagrams for:
 Command: atm-spike-investigation "GraphQL implementation feasibility"
 
 Output:
-🆕 No previous analysis found for: GraphQL implementation feasibility  
-📁 Will create new analysis at: ~/Documents/Obsidian/Development/spikes/graphql-implementation-feasibility
+🆕 No previous analysis found for: GraphQL implementation feasibility
+📁 Will create new analysis at: ~/Documents/technical-analysis/spikes/graphql-implementation-feasibility
 🔍 Starting fresh spike investigation...
 
 🎯 SPIKE INVESTIGATION: GraphQL implementation feasibility
@@ -798,10 +844,10 @@ Please provide the following information:
 🏆 Winner: Apollo GraphQL (weighted score: 8.4/10)
 
 Generating comprehensive analysis report...
-✓ Main analysis: ~/Documents/Obsidian/Development/spikes/graphql-implementation-feasibility/analysis.md
-✓ Research notes: ~/Documents/Obsidian/Development/spikes/graphql-implementation-feasibility/research.md
-✓ Recommendations: ~/Documents/Obsidian/Development/spikes/graphql-implementation-feasibility/recommendations.md
-✓ Architecture diagrams: ~/Documents/Obsidian/Development/spikes/graphql-implementation-feasibility/diagrams.excalidraw
+✓ Main analysis: ~/Documents/technical-analysis/spikes/graphql-implementation-feasibility/analysis.md
+✓ Research notes: ~/Documents/technical-analysis/spikes/graphql-implementation-feasibility/research.md
+✓ Recommendations: ~/Documents/technical-analysis/spikes/graphql-implementation-feasibility/recommendations.md
+✓ Architecture diagrams: ~/Documents/technical-analysis/spikes/graphql-implementation-feasibility/diagrams/
 
 🎯 RECOMMENDATION SUMMARY:
 - **Approach:** Gradual migration with Apollo GraphQL
@@ -817,7 +863,7 @@ Generating comprehensive analysis report...
 - Set up GraphQL development environment
 - Train team on GraphQL fundamentals
 
-View full analysis in Obsidian vault.
+View full analysis in report directory.
 ```
 
 ## Notes:
@@ -825,7 +871,7 @@ View full analysis in Obsidian vault.
 - Integrates Serena for deep codebase analysis and impact assessment
 - Uses Context7 for comprehensive library/technology research
 - Combines multiple data sources for informed decision-making
-- Creates structured Obsidian documentation with visual aids
+- Creates structured documentation with visual aids
 - Supports continuation from previous analyses
 - Generates actionable recommendations with clear ROI
 - Includes proof-of-concept guidance and success metrics

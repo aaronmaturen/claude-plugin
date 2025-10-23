@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; then
+    echo "Usage: md2html <filename.md>"
+    exit 1
+fi
+
+filename="$1"
+basename="${filename%.*}"
+npx marked "$filename" > "${basename}.html"
+npx serve "${basename}.html"

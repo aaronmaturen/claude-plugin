@@ -1,6 +1,6 @@
 # Bug Investigation - 5 Whys Root Cause Analysis
 
-Investigate a JIRA bug using the 5 Whys technique to identify root causes across multiple repositories (frontend/backend), then create a comprehensive analysis report in Obsidian.
+Investigate a JIRA bug using the 5 Whys technique to identify root causes across multiple repositories (frontend/backend), then create a comprehensive analysis report.
 
 **Bug ID:** $ARGUMENTS (JIRA issue key, e.g., PROJ-1234)
 
@@ -13,7 +13,7 @@ If no JIRA bug ID is provided as an argument, the command will prompt you to des
 - Use your bug description for the initial problem analysis
 - Create a manual bug ID based on description keywords
 - Follow the same 5 Whys methodology for root cause analysis
-- Generate the same comprehensive Obsidian documentation
+- Generate the same comprehensive documentation
 
 ## Investigation Process:
 
@@ -48,9 +48,9 @@ echo "🎯 Investigating JIRA bug: $BUG_ID"
 
 ### 1. **Check for Previous Investigation Findings**
 ```bash
-# Setup Obsidian vault structure and check for existing investigation
-OBSIDIAN_VAULT="${OBSIDIAN_VAULT:-$HOME/Documents/Obsidian/Development}"
-BUG_DIR="${OBSIDIAN_VAULT}/bugs/${BUG_ID}"
+# Setup report directory structure and check for existing investigation
+REPORT_BASE="${REPORT_BASE:-$HOME/Documents/technical-analysis}"
+BUG_DIR="${REPORT_BASE}/bugs/${BUG_ID}"
 REPORT_FILE="${BUG_DIR}/investigation.md"
 TIMELINE_FILE="${BUG_DIR}/timeline.md"
 RECOMMENDATIONS_FILE="${BUG_DIR}/recommendations.md"
@@ -266,10 +266,10 @@ For each "Why", collect:
 - Documentation gaps
 - Process breakdowns
 
-### 8. **Generate/Update Obsidian Report**
+### 8. **Generate/Update Report**
 
 ```bash
-# Vault structure already set up in step 0
+# Report structure already set up in step 0
 mkdir -p "$BUG_DIR"
 
 # If continuing from previous investigation, backup the existing files
@@ -618,7 +618,7 @@ Command: atm-bug-investigation PROJ-1234
 
 Output:
 🔍 Found previous investigation for PROJ-1234
-📁 Location: ~/Documents/Obsidian/Development/bugs/PROJ-1234
+📁 Location: ~/Documents/technical-analysis/bugs/PROJ-1234
 
 === Previous Investigation Summary ===
 📋 Previous Findings:
@@ -646,15 +646,15 @@ Frontend and backend teams not coordinating on API error contracts
    A) Continue from where we left off and update the existing investigation
    B) Start a fresh investigation (previous findings will be backed up)
 
-📖 Previous investigation available at: ~/Documents/Obsidian/Development/bugs/PROJ-1234/investigation.md
-📈 Timeline available at: ~/Documents/Obsidian/Development/bugs/PROJ-1234/timeline.md
-💡 Recommendations available at: ~/Documents/Obsidian/Development/bugs/PROJ-1234/recommendations.md
+📖 Previous investigation available at: ~/Documents/technical-analysis/bugs/PROJ-1234/investigation.md
+📈 Timeline available at: ~/Documents/technical-analysis/bugs/PROJ-1234/timeline.md
+💡 Recommendations available at: ~/Documents/technical-analysis/bugs/PROJ-1234/recommendations.md
 
 🤔 Please specify how you'd like to proceed with this investigation.
    (The previous context will inform my analysis either way)
 
 Continuing from previous investigation...
-📁 Previous investigation backed up to: ~/Documents/Obsidian/Development/bugs/PROJ-1234/backups/20240120_143000
+📁 Previous investigation backed up to: ~/Documents/technical-analysis/bugs/PROJ-1234/backups/20240120_143000
 
 Fetching updated bug details from JIRA...
 ✓ Bug retrieved: "User data loss on form submission"
@@ -713,10 +713,10 @@ Root Cause Identified:
 - Organizational: Siloed team structure
 
 Generating investigation report...
-✓ Report saved to: ~/Documents/Obsidian/Development/bugs/PROJ-1234/investigation.md
-✓ Timeline created: ~/Documents/Obsidian/Development/bugs/PROJ-1234/timeline.md
-✓ Recommendations: ~/Documents/Obsidian/Development/bugs/PROJ-1234/recommendations.md
-✓ Full-stack diagram: ~/Documents/Obsidian/Development/bugs/PROJ-1234/flow-diagram.excalidraw
+✓ Report saved to: ~/Documents/technical-analysis/bugs/PROJ-1234/investigation.md
+✓ Timeline created: ~/Documents/technical-analysis/bugs/PROJ-1234/timeline.md
+✓ Recommendations: ~/Documents/technical-analysis/bugs/PROJ-1234/recommendations.md
+✓ Full-stack diagram: ~/Documents/technical-analysis/bugs/PROJ-1234/diagrams/flow-diagram
 
 Summary:
 - Root cause: Siloed development with no error contract
@@ -727,7 +727,7 @@ Summary:
 - Estimated impact: 150 users affected
 - Fix complexity: Medium (3-4 days for both repos)
 
-View full investigation in Obsidian vault.
+View full investigation in report directory.
 ```
 
 ## Notes:
@@ -737,7 +737,7 @@ View full investigation in Obsidian vault.
 - Requests specific information for missing repos
 - Uses 5 Whys methodology across the full stack
 - Identifies integration/communication issues
-- Creates comprehensive Obsidian documentation
+- Creates comprehensive documentation
 - Includes cross-repo code analysis
 - Generates actionable recommendations for both systems
 - Creates visual diagrams showing full-stack flow

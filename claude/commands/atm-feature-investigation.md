@@ -1,6 +1,6 @@
 # Feature Investigation - Ultraplan Implementation Analysis
 
-Investigate and plan the implementation of a new feature using comprehensive analysis across multiple repositories (frontend/backend), then create a detailed implementation plan in Obsidian.
+Investigate and plan the implementation of a new feature using comprehensive analysis across multiple repositories (frontend/backend), then create a detailed implementation plan.
 
 **Feature Request:** $ARGUMENTS (JIRA issue key or feature description)
 
@@ -8,10 +8,10 @@ Investigate and plan the implementation of a new feature using comprehensive ana
 
 ### 0. **Check for Previous Feature Planning**
 ```bash
-# Setup Obsidian vault structure and check for existing planning
-OBSIDIAN_VAULT="${OBSIDIAN_VAULT:-$HOME/Documents/Obsidian/Development}"
+# Setup report directory structure and check for existing planning
+REPORT_BASE="${REPORT_BASE:-$HOME/Documents/technical-analysis}"
 FEATURE_ID="$ARGUMENTS"
-FEATURE_DIR="${OBSIDIAN_VAULT}/features/${FEATURE_ID}"
+FEATURE_DIR="${REPORT_BASE}/features/${FEATURE_ID}"
 PLAN_FILE="${FEATURE_DIR}/implementation-plan.md"
 DESIGN_FILE="${FEATURE_DIR}/technical-design.md"
 TASKS_FILE="${FEATURE_DIR}/task-breakdown.md"
@@ -231,10 +231,10 @@ fi
 - Rollout planning
 - Team training
 
-### 7. **Generate/Update Obsidian Documentation**
+### 7. **Generate/Update Documentation**
 
 ```bash
-# Vault structure already set up in step 0
+# Report structure already set up in step 0
 mkdir -p "$FEATURE_DIR"
 
 # If continuing from previous planning, backup existing files
@@ -767,7 +767,7 @@ Command: atm-feature-investigation PROJ-5678
 
 Output:
 🆕 No previous planning found for PROJ-5678
-📁 Will create new planning at: ~/Documents/Obsidian/Development/features/PROJ-5678
+📁 Will create new planning at: ~/Documents/technical-analysis/features/PROJ-5678
 🔍 Starting fresh feature investigation...
 
 Fetching feature details from JIRA...
@@ -829,10 +829,10 @@ Implementation Phases:
 Estimated effort: 8 weeks (2 frontend, 2 backend devs)
 
 Generating documentation...
-✓ Implementation plan: ~/Documents/Obsidian/Development/features/PROJ-5678/implementation-plan.md
-✓ Technical design: ~/Documents/Obsidian/Development/features/PROJ-5678/technical-design.md
-✓ Task breakdown: ~/Documents/Obsidian/Development/features/PROJ-5678/task-breakdown.md
-✓ Architecture diagram: ~/Documents/Obsidian/Development/features/PROJ-5678/architecture.excalidraw
+✓ Implementation plan: ~/Documents/technical-analysis/features/PROJ-5678/implementation-plan.md
+✓ Technical design: ~/Documents/technical-analysis/features/PROJ-5678/technical-design.md
+✓ Task breakdown: ~/Documents/technical-analysis/features/PROJ-5678/task-breakdown.md
+✓ Architecture diagram: ~/Documents/technical-analysis/features/PROJ-5678/diagrams/architecture
 
 Summary:
 - Feature type: Full-stack with real-time components
@@ -842,7 +842,7 @@ Summary:
 - Major risks: Scaling WebSocket connections
 - Dependencies: Redis cluster upgrade needed
 
-View complete plan in Obsidian vault.
+View complete plan in report directory.
 ```
 
 ## Notes:

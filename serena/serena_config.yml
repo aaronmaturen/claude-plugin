@@ -70,9 +70,16 @@ token_count_estimator: TIKTOKEN_GPT4O
 # instruct Serena to activate the project by its path for first-time activation.
 # NOTE: Make sure there are no name collisions in the names of registered projects.
 projects:
+- /Users/aaron/Projects/aaronmaturen/aaronmaturen.github.io
+- /Users/aaron/Projects/aaronmaturen/ascii-editor
+- /Users/aaron/Projects/aaronmaturen/blocks
+- /Users/aaron/Projects/aaronmaturen/clair-de-config
 - /Users/aaron/Projects/aaronmaturen/devtrail
 - /Users/aaron/Projects/aaronmaturen/jeeves
 - /Users/aaron/Projects/aaronmaturen/otis
+- /Users/aaron/Projects/aaronmaturen/promo-forge
+- /Users/aaron/Projects/presencelearning/api-essentials
 - /Users/aaron/Projects/presencelearning/api-workplace
+- /Users/aaron/Projects/presencelearning/data-gen
 - /Users/aaron/Projects/presencelearning/edu-clients
 - /Users/aaron/Projects/presencelearning/presence-data-seeder

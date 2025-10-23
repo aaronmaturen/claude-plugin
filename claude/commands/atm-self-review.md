@@ -188,7 +188,147 @@ Based on Claude's analysis, provide:
 - Additional safeguards
 - Future-proofing suggestions
 
-### 6. **Decision Documentation**
+### 6. **PR Line Comments Analysis**
+Find and add helpful comments directly to PR lines:
+
+```bash
+echo "=== PR Comment Suggestions ==="
+
+# Check if we have an open PR for this branch
+CURRENT_BRANCH=$(git branch --show-current)
+PR_NUMBER=$(gh pr list --head "$CURRENT_BRANCH" --json number --jq '.[0].number' 2>/dev/null)
+
+if [[ -z "$PR_NUMBER" ]]; then
+    echo "❌ No open PR found for branch: $CURRENT_BRANCH"
+    echo "   Create a PR first with: gh pr create"
+    echo ""
+else
+    echo "✅ Found PR #$PR_NUMBER for branch: $CURRENT_BRANCH"
+    echo ""
+    
+    # Get PR diff with line numbers
+    echo "📝 Analyzing PR diff for comment-worthy lines..."
+    echo ""
+    
+    # Store suggestions in an array
+    declare -a SUGGESTIONS=()
+    
+    # Analyze the diff for patterns that typically need comments
+    gh pr diff "$PR_NUMBER" | while IFS= read -r line; do
+        # Check for complex regex patterns
+        if echo "$line" | grep -E '^\+.*[^\\]\{.*\}.*\{.*\}' > /dev/null; then
+            SUGGESTIONS+=("Complex regex pattern detected - needs explanation")
+        fi
+        
+        # Check for magic numbers
+        if echo "$line" | grep -E '^\+.*[^0-9][0-9]{3,}[^0-9]' > /dev/null; then
+            SUGGESTIONS+=("Magic number detected - consider explaining or extracting to constant")
+        fi
+        
+        # Check for complex conditionals
+        if echo "$line" | grep -E '^\+.*(if|while).*&&.*\|\|' > /dev/null; then
+            SUGGESTIONS+=("Complex conditional logic - consider adding clarifying comment")
+        fi
+        
+        # Check for workarounds or hacks
+        if echo "$line" | grep -iE '^\+.*(hack|workaround|fixme|todo|xxx)' > /dev/null; then
+            SUGGESTIONS+=("Workaround/TODO detected - document why and future plans")
+        fi
+    done
+    
+    # Show files with their changes for context
+    echo "Files in this PR:"
+    gh pr diff "$PR_NUMBER" --name-only | nl -v 1
+    echo ""
+    
+    # Interactive comment addition
+    echo "🔍 Review the diff and identify lines that need comments:"
+    echo ""
+    echo "To add a comment to a specific line in the PR:"
+    echo "1. View the full diff: gh pr diff $PR_NUMBER"
+    echo "2. Note the file and line number that needs a comment"
+    echo "3. Use the following command structure:"
+    echo ""
+    echo "   # Single line comment:"
+    echo "   gh pr review $PR_NUMBER --comment --body 'Your comment here' -F <file>:<line>"
+    echo ""
+    echo "   # Multi-line comment (for a range):"
+    echo "   gh pr review $PR_NUMBER --comment --body 'Your comment here' -F <file>:<start_line>-<end_line>"
+    echo ""
+    
+    # Prompt for automated comment suggestions
+    read -p "🤖 Would you like Claude to analyze specific files for comment suggestions? (y/N): " analyze_files
+    if [[ "$analyze_files" =~ ^[Yy] ]]; then
+        echo ""
+        echo "Showing changed files:"
+        gh pr diff "$PR_NUMBER" --name-only | nl -v 1
+        echo ""
+        read -p "Enter file numbers to analyze (comma-separated, e.g., 1,3,4): " file_nums
+        
+        # Parse selected files
+        IFS=',' read -ra SELECTED_FILES <<< "$file_nums"
+        for file_num in "${SELECTED_FILES[@]}"; do
+            FILE=$(gh pr diff "$PR_NUMBER" --name-only | sed -n "${file_num}p")
+            if [[ -n "$FILE" ]]; then
+                echo ""
+                echo "Analyzing: $FILE"
+                echo "---"
+                
+                # Get the diff for this specific file
+                gh pr diff "$PR_NUMBER" -- "$FILE"
+                
+                echo ""
+                echo "Claude, please analyze the above diff and suggest specific lines that would benefit from comments."
+                echo "For each suggestion, provide:"
+                echo "1. The exact line number in the diff"
+                echo "2. Why a comment would be helpful"
+                echo "3. A suggested comment text"
+                echo ""
+            fi
+        done
+    fi
+    
+    # Batch comment submission
+    echo ""
+    read -p "📝 Ready to add comments? (y/N): " add_comments
+    if [[ "$add_comments" =~ ^[Yy] ]]; then
+        echo ""
+        echo "Enter comments (format: <file>:<line> <comment text>)"
+        echo "Press Ctrl+D when done, or type 'done' to finish:"
+        echo ""
+        
+        declare -a COMMENTS=()
+        while IFS= read -r comment_input; do
+            [[ "$comment_input" == "done" ]] && break
+            [[ -n "$comment_input" ]] && COMMENTS+=("$comment_input")
+        done
+        
+        # Process and submit comments
+        if [[ ${#COMMENTS[@]} -gt 0 ]]; then
+            echo ""
+            echo "Submitting ${#COMMENTS[@]} comment(s)..."
+            
+            for comment in "${COMMENTS[@]}"; do
+                # Parse file:line and comment text
+                if [[ "$comment" =~ ^([^:]+):([0-9]+(-[0-9]+)?)[[:space:]]+(.+)$ ]]; then
+                    FILE="${BASH_REMATCH[1]}"
+                    LINE="${BASH_REMATCH[2]}"
+                    TEXT="${BASH_REMATCH[4]}"
+                    
+                    echo "Adding comment to $FILE:$LINE"
+                    gh pr comment "$PR_NUMBER" --body "**📍 Line $LINE in \`$FILE\`:**\n\n$TEXT"
+                fi
+            done
+            
+            echo ""
+            echo "✅ Comments added to PR #$PR_NUMBER"
+            echo "View PR: gh pr view $PR_NUMBER --web"
+        fi
+    fi
+fi
+```
+
+### 7. **Decision Documentation**
 For complex or non-obvious changes, document:
 
 **Why was this approach chosen?**

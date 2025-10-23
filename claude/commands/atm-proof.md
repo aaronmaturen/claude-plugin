@@ -63,14 +63,14 @@ Analyze a code module as a mathematician/logician to create a formal finite stat
      ∀ x ∈ Input : Precondition(x) ⟹ Postcondition(f(x))
      ```
 
-6. **Generate Excalidraw Diagram**
-   - Create visual FSM representation in Excalidraw format
+6. **Generate FSM Diagram**
+   - Create visual FSM representation
    - Include states, transitions, and annotations
-   - Save to Obsidian vault with proper linking
-   - Generate both `.excalidraw` file and embedded markdown
+   - Save to report directory with proper linking
+   - Generate diagram files and embedded markdown
 
-7. **Generate Report in Obsidian Vault**
-   - Create analysis document in: `${OBSIDIAN_VAULT}/claude-sessions/${PARENT_DIR}/${PROJECT_NAME}/`
+7. **Generate Report**
+   - Create analysis document in: `${REPORT_BASE}/formal-analysis/${PARENT_DIR}/${PROJECT_NAME}/`
    - Filename: `proof-${MODULE_NAME}-${DATE}.md`
    - Content structure:
    ```markdown
@@ -114,12 +114,12 @@ Command: atm-proof src/utils/parser.ts
 
 Output:
 Analyzing module: src/utils/parser.ts
-Creating formal analysis in Obsidian vault...
+Creating formal analysis...
 
 Generated files:
-- Analysis report: ~/Documents/Obsidian/Development/claude-sessions/project-name/proof-parser-2024-01-15.md
-- FSM diagram: ~/Documents/Obsidian/Development/claude-sessions/diagrams/project-name/parser-fsm-2024-01-15.excalidraw
-- Edge case diagrams: ~/Documents/Obsidian/Development/claude-sessions/diagrams/project-name/edge-case-*.excalidraw
+- Analysis report: ~/Documents/technical-analysis/formal-analysis/projects/project-name/proof-parser-2024-01-15.md
+- FSM diagram: ~/Documents/technical-analysis/formal-analysis/projects/project-name/diagrams/parser-fsm-2024-01-15
+- Edge case diagrams: ~/Documents/technical-analysis/formal-analysis/projects/project-name/diagrams/edge-case-*
 
 ## Finite State Machine Model
 States: {INIT, PARSING, ERROR, COMPLETE}
@@ -171,16 +171,16 @@ Transitions:
 - Provides actionable fixes for discovered issues
 - Think like a mathematician: "What can go wrong?"
 
-## Excalidraw Integration:
+## Diagram Integration:
 
 ### File Generation
-When generating Excalidraw diagrams:
+When generating diagrams:
 
-1. **Create `.excalidraw` files** in the Obsidian vault:
-   - Path: `{OBSIDIAN_VAULT}/claude-sessions/diagrams/{project-name}/`
-   - Naming: `{module-name}-fsm-{date}.excalidraw`
+1. **Create diagram files** in the report directory:
+   - Path: `{REPORT_BASE}/formal-analysis/{parent-dir}/{project-name}/diagrams/`
+   - Naming: `{module-name}-fsm-{date}`
 
-2. **Excalidraw JSON Format**:
+2. **Diagram Format**:
    ```json
    {
      "type": "excalidraw",
@@ -225,9 +225,9 @@ When generating Excalidraw diagrams:
      - Red: Error states
      - Blue: External interfaces
 
-4. **Link in Obsidian**:
+4. **Link in Report**:
    ```markdown
-   ![[parser-fsm-2024-01-15.excalidraw|800]]
+   ![FSM Diagram](diagrams/parser-fsm-2024-01-15.png)
    ```
 
 ### Example FSM Diagram Structure:
@@ -239,33 +239,30 @@ When generating Excalidraw diagrams:
 - Actions on transitions /action
 - Self-loops for repeated operations
 
-### Auto-save to Obsidian:
-The diagram files should be automatically saved to the same Obsidian vault structure used for session logging, making them accessible and linked from the analysis reports.
+### Auto-save Reports:
+The diagram files should be automatically saved to the report directory structure, making them accessible and linked from the analysis reports.
 
 ### Implementation Note:
 When running atm-proof, Claude will:
 1. Analyze the code module mathematically
 2. Get project information from git context
-3. Create Obsidian vault directory structure if needed:
+3. Create report directory structure if needed:
    ```bash
-   OBSIDIAN_VAULT="${OBSIDIAN_VAULT:-$HOME/Documents/Obsidian/Development}"
+   REPORT_BASE="${REPORT_BASE:-$HOME/Documents/technical-analysis}"
    PROJECT_NAME=$(basename $(git rev-parse --show-toplevel 2>/dev/null) || echo "unknown")
    PARENT_DIR=$(basename $(dirname $(git rev-parse --show-toplevel 2>/dev/null)) || echo "projects")
-   
-   REPORT_DIR="${OBSIDIAN_VAULT}/claude-sessions/${PARENT_DIR}/${PROJECT_NAME}"
-   DIAGRAM_DIR="${OBSIDIAN_VAULT}/claude-sessions/diagrams/${PROJECT_NAME}"
-   
+
+   REPORT_DIR="${REPORT_BASE}/formal-analysis/${PARENT_DIR}/${PROJECT_NAME}"
+   DIAGRAM_DIR="${REPORT_DIR}/diagrams"
+
    mkdir -p "$REPORT_DIR" "$DIAGRAM_DIR"
    ```
-4. Generate Excalidraw diagrams using the helper script:
-   ```bash
-   ~/.claude/hooks/excalidraw-generator.sh fsm "module-name" "project-name" "STATE1,STATE2,STATE3" "transitions"
-   ```
-5. Save the analysis report as markdown in Obsidian:
+4. Generate FSM diagrams
+5. Save the analysis report as markdown:
    ```bash
    REPORT_FILE="${REPORT_DIR}/proof-${MODULE_NAME}-$(date +%Y-%m-%d-%H%M).md"
    echo "$ANALYSIS_CONTENT" > "$REPORT_FILE"
    ```
-6. Link diagrams in the report using: `![[diagram-name.excalidraw]]`
+6. Link diagrams in the report using relative paths
 
-The analysis will be immediately available in your Obsidian vault with all diagrams properly linked and viewable.
+The analysis will be immediately available in your report directory with all diagrams properly linked and viewable.

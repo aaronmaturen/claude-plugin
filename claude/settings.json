@@ -1,44 +1,6 @@
 {
-  "model": "sonnet",
-  "hooks": {
-    "Stop": [
-      {
-        "matcher": ".*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "sh /Users/aaron/Projects/aaronmaturen/clair-de-config/claude/hooks/obsidian-conversational-logger.sh"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|MultiEdit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "sh ~/.claude/hooks/formatter.sh"
-          },
-          {
-            "type": "command",
-            "command": "sh ~/.claude/hooks/test_runner.sh"
-          },
-          {
-            "type": "command",
-            "command": "# CLAUDE_HOOK_TYPE=post_edit CLAUDE_FILE_PATH=\"{{file_path}}\" sh ~/.claude/hooks/obsidian-logger.sh"
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "# CLAUDE_COMMAND=\"{{command}}\" sh ~/.claude/hooks/command-describer.sh"
-          }
-        ]
-      }
-    ]
+  "alwaysThinkingEnabled": false,
+  "feedbackSurveyState": {
+    "lastShownTime": 1753982698006
   }
 }

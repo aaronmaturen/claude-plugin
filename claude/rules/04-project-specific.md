@@ -18,6 +18,11 @@
 - Ask user for test commands if unclear
 - Run tests only when explicitly requested
 
+### Django/Python Testing
+- Always use `--keepdb` flag when running Django tests to preserve test database
+- Example: `python manage.py test --keepdb` or `pytest --keepdb`
+- For containerized Django apps: `docker exec DOCKER_CONTAINER python manage.py test --keepdb`
+
 ### TypeScript/Angular Testing
 - Use Jest as the testing framework, not Jasmine
 - Use MSW (Mock Service Worker) to mock API endpoints
