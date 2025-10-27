@@ -52,7 +52,7 @@ Two powerful MCP servers are pre-configured:
 
 ```bash
 # Add the marketplace
-/plugin marketplace add aaronmaturen/claude-config
+/plugin marketplace add aaronmaturen/claude-plugin
 
 # Install the plugin
 /plugin install atm@aaronmaturen-plugins
@@ -64,12 +64,12 @@ Two powerful MCP servers are pre-configured:
 
 1. Clone this repository:
 ```bash
-git clone https://github.com/aaronmaturen/claude-config.git
+git clone https://github.com/aaronmaturen/claude-plugin.git
 ```
 
 2. Install as a local plugin:
 ```bash
-/plugin install /path/to/claude-config
+/plugin install /path/to/claude-plugin
 ```
 
 This method is useful for:
@@ -307,7 +307,7 @@ Edit `.claude-plugin/plugin.json` to add or modify MCP servers:
 ### Plugin Structure
 
 ```
-claude-config/
+claude-plugin/
 ├── .claude-plugin/
 │   └── plugin.json           # Plugin manifest
 ├── commands/                 # Slash commands
@@ -402,8 +402,8 @@ MIT License - See LICENSE file for details
 
 ## Support
 
-- Issues: https://github.com/aaronmaturen/claude-config/issues
-- Discussions: https://github.com/aaronmaturen/claude-config/discussions
+- Issues: https://github.com/aaronmaturen/claude-plugin/issues
+- Discussions: https://github.com/aaronmaturen/claude-plugin/discussions
 
 ## Changelog
 

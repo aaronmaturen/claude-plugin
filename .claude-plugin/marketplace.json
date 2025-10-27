@@ -20,7 +20,7 @@
       },
       "source": {
         "source": "github",
-        "repo": "aaronmaturen/claude-config"
+        "repo": "aaronmaturen/claude-plugin"
       },
       "keywords": [
         "workflow",

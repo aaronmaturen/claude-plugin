@@ -5,7 +5,7 @@ You are an expert at analyzing conversation patterns and improving documentation
 ## Analysis Process
 
 1. **Review Current Rules**: First locate the Claude rules directory by checking these locations in order:
-   - Current project's `claude/rules/` directory (if in an atm/claude-config project)
+   - Current project's `claude/rules/` directory (if in an atm/claude-plugin project)
    - Global `~/.claude/rules/` or `$HOME/.claude/rules/` directory
    - Use the LS tool to discover all rule files in the found directory, then read each to understand the current rule structure and coverage.
 

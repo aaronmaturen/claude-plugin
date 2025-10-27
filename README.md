@@ -51,7 +51,7 @@ The easiest way to use atm is as a Claude Code plugin:
 
 ```bash
 # Add the marketplace
-/plugin marketplace add aaronmaturen/clair-de-config
+/plugin marketplace add aaronmaturen/claude-plugin
 
 # Install the plugin
 /plugin install atm@aaronmaturen-plugins
@@ -64,10 +64,10 @@ The easiest way to use atm is as a Claude Code plugin:
 
 ```bash
 # Clone the repository
-git clone https://github.com/aaronmaturen/claude-config.git
+git clone https://github.com/aaronmaturen/claude-plugin.git
 
 # Install from local path
-/plugin install /path/to/claude-config
+/plugin install /path/to/claude-plugin
 ```
 
 This gives you instant access to all 15 workflow commands and pre-configured MCP servers.
@@ -79,8 +79,8 @@ See [PLUGIN.md](PLUGIN.md) for complete plugin documentation.
 For shell integration and synchronization features:
 
 ```bash
-git clone https://github.com/aaronmaturen/claude-config.git
-cd claude-config
+git clone https://github.com/aaronmaturen/claude-plugin.git
+cd claude-plugin
 ./install.sh  # This script now exists and is, indeed, magnificent
 ```
 
@@ -139,7 +139,7 @@ clair-status            # Check synchronization status and health
 ## Project Structure
 
 ```
-claude-config/
+claude-plugin/
 ├── .claude-plugin/
 │   └── plugin.json     # Plugin manifest
 ├── commands/           # Slash commands for plugin
