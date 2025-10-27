@@ -1,14 +1,14 @@
 ---
-description: Install clair-de-config rules to your global Claude configuration
+description: Install atm rules to your global Claude configuration
 ---
 
 # Setup Rules Command
 
-This command helps you install the clair-de-config rules into your global Claude configuration.
+This command helps you install the atm rules into your global Claude configuration.
 
 ## Instructions
 
-You are helping the user install the clair-de-config rule modules into their global Claude configuration directory.
+You are helping the user install the atm rule modules into their global Claude configuration directory.
 
 ### Steps:
 

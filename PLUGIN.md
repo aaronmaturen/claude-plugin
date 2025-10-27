@@ -1,4 +1,4 @@
-# clair-de-config Claude Plugin
+# atm Claude Plugin
 
 Professional development workflow plugin for Claude Code with JIRA integration, PR review tools, MCP servers, and comprehensive workflow commands.
 
@@ -9,29 +9,29 @@ Professional development workflow plugin for Claude Code with JIRA integration, 
 This plugin provides 14 specialized workflow commands plus a setup command:
 
 #### Development Workflow
-- `/atm-commit-msg` - Generate JIRA-linked commit messages from staged changes
-- `/atm-pr-review` - Comprehensive PR analysis with educational context for junior engineers
-- `/atm-implement-pr-feedback` - Systematically implement PR feedback with categorization
-- `/atm-self-review` - Self-code review before creating PR
-- `/atm-jira` - JIRA ticket research and implementation planning
+- `/commit-msg` - Generate JIRA-linked commit messages from staged changes
+- `/pr-review` - Comprehensive PR analysis with educational context for junior engineers
+- `/implement-pr-feedback` - Systematically implement PR feedback with categorization
+- `/self-review` - Self-code review before creating PR
+- `/jira` - JIRA ticket research and implementation planning
 
 #### Code Analysis
-- `/atm-arch-review` - Architecture review and analysis
-- `/atm-simplify` - Code simplification recommendations
-- `/atm-proof` - Mathematical analysis and edge case discovery
-- `/atm-bug-investigation` - Systematic bug analysis and debugging
-- `/atm-feature-investigation` - Feature requirement analysis
-- `/atm-spike-investigation` - Technical spike research
+- `/arch-review` - Architecture review and analysis
+- `/simplify` - Code simplification recommendations
+- `/proof` - Mathematical analysis and edge case discovery
+- `/bug-investigation` - Systematic bug analysis and debugging
+- `/feature-investigation` - Feature requirement analysis
+- `/spike-investigation` - Technical spike research
 
 #### Project Setup
-- `/atm-scaffold` - Interactive project scaffolding with framework selection
+- `/scaffold` - Interactive project scaffolding with framework selection
 
 #### Session Management
-- `/atm-clear` - Create session summary and clear context
-- `/atm-reflect` - Analyze conversation patterns and suggest improvements
+- `/clear` - Create session summary and clear context
+- `/reflect` - Analyze conversation patterns and suggest improvements
 
 #### Configuration
-- `/setup-rules` - Install clair-de-config rules to global Claude configuration
+- `/setup-rules` - Install atm rules to global Claude configuration
 
 ### MCP Servers
 
@@ -52,10 +52,10 @@ Two powerful MCP servers are pre-configured:
 
 ```bash
 # Add the marketplace
-/plugin marketplace add aaronmaturen/clair-de-config
+/plugin marketplace add aaronmaturen/claude-config
 
 # Install the plugin
-/plugin install clair-de-config@aaronmaturen-plugins
+/plugin install atm@aaronmaturen-plugins
 
 # Plugin is now ready to use!
 ```
@@ -64,12 +64,12 @@ Two powerful MCP servers are pre-configured:
 
 1. Clone this repository:
 ```bash
-git clone https://github.com/aaronmaturen/clair-de-config.git
+git clone https://github.com/aaronmaturen/claude-config.git
 ```
 
 2. Install as a local plugin:
 ```bash
-/plugin install /path/to/clair-de-config
+/plugin install /path/to/claude-config
 ```
 
 This method is useful for:
@@ -113,13 +113,13 @@ Or use the original installation path from your system if `uvx` is already insta
 
 Some commands require external CLI tools:
 
-- **GitHub CLI (`gh`)** - Required for `/atm-pr-review`, `/atm-implement-pr-feedback`
+- **GitHub CLI (`gh`)** - Required for `/pr-review`, `/implement-pr-feedback`
   ```bash
   brew install gh
   gh auth login
   ```
 
-- **JIRA CLI (`jira`)** - Required for `/atm-commit-msg`, `/atm-jira`
+- **JIRA CLI (`jira`)** - Required for `/commit-msg`, `/jira`
   ```bash
   brew install ankitpokhrel/jira-cli/jira-cli
   jira init
@@ -136,7 +136,7 @@ Commands will gracefully handle missing dependencies and inform you what's neede
 git add .
 
 # Generate JIRA-linked commit message
-/atm-commit-msg
+/commit-msg
 ```
 
 The command will:
@@ -149,7 +149,7 @@ The command will:
 ### Review a Pull Request
 
 ```bash
-/atm-pr-review 123
+/pr-review 123
 ```
 
 Provides comprehensive analysis:
@@ -161,7 +161,7 @@ Provides comprehensive analysis:
 ### Scaffold a New Project
 
 ```bash
-/atm-scaffold
+/scaffold
 ```
 
 Interactive scaffolding with:
@@ -173,14 +173,14 @@ Interactive scaffolding with:
 ### Investigate a JIRA Ticket
 
 ```bash
-/atm-jira PRO-1234
+/jira PRO-1234
 ```
 
 Fetches ticket details and creates implementation roadmap using Serena for codebase analysis.
 
 ## Command Details
 
-### Commit Message Generation (`/atm-commit-msg`)
+### Commit Message Generation (`/commit-msg`)
 
 **Features:**
 - Extracts ticket numbers from branch names (PRO-####, BUG-###, etc.)
@@ -199,7 +199,7 @@ Added unit tests for auth flows and error cases.
 https://your-jira.atlassian.net/browse/PRO-1234
 ```
 
-### PR Review (`/atm-pr-review`)
+### PR Review (`/pr-review`)
 
 **Features:**
 - Comprehensive code analysis
@@ -213,13 +213,13 @@ https://your-jira.atlassian.net/browse/PRO-1234
 **Usage:**
 ```bash
 # Review a PR by number
-/atm-pr-review 123
+/pr-review 123
 
 # Review current branch
-/atm-pr-review
+/pr-review
 ```
 
-### Project Scaffolding (`/atm-scaffold`)
+### Project Scaffolding (`/scaffold`)
 
 **Supported Frameworks:**
 - React (with Vite, TypeScript, Testing Library)
@@ -307,11 +307,11 @@ Edit `.claude-plugin/plugin.json` to add or modify MCP servers:
 ### Plugin Structure
 
 ```
-clair-de-config/
+claude-config/
 ├── .claude-plugin/
 │   └── plugin.json           # Plugin manifest
 ├── commands/                 # Slash commands
-│   ├── atm-*.md             # Workflow commands
+│   ├── *.md                 # Workflow commands
 │   └── setup-rules.md       # Configuration command
 ├── claude/                   # Legacy configuration (for manual setup)
 │   ├── CLAUDE.md            # Rules entry point
@@ -334,11 +334,11 @@ Commands are designed to:
 ### MCP Integration
 
 - **Context7** - Provides real-time documentation lookup
-  - Used in: `/atm-pr-review`, `/atm-scaffold`, `/atm-arch-review`
+  - Used in: `/pr-review`, `/scaffold`, `/arch-review`
   - Enhances recommendations with current best practices
 
 - **Serena** - Deep codebase understanding
-  - Used in: `/atm-jira`, investigation commands
+  - Used in: `/jira`, investigation commands
   - Symbol navigation and pattern discovery
   - Project memory for context persistence
 
@@ -349,7 +349,7 @@ Commands are designed to:
 Ensure the plugin is installed and enabled:
 ```bash
 /plugin list
-/plugin enable clair-de-config
+/plugin enable atm
 ```
 
 ### MCP Servers Not Working
@@ -402,8 +402,8 @@ MIT License - See LICENSE file for details
 
 ## Support
 
-- Issues: https://github.com/aaronmaturen/clair-de-config/issues
-- Discussions: https://github.com/aaronmaturen/clair-de-config/discussions
+- Issues: https://github.com/aaronmaturen/claude-config/issues
+- Discussions: https://github.com/aaronmaturen/claude-config/discussions
 
 ## Changelog
 

@@ -11,7 +11,7 @@
   },
   "plugins": [
     {
-      "name": "clair-de-config",
+      "name": "atm",
       "description": "Professional development workflow plugin with JIRA integration, PR review tools, and comprehensive MCP server configuration",
       "version": "1.0.0",
       "author": {
@@ -20,7 +20,7 @@
       },
       "source": {
         "source": "github",
-        "repo": "aaronmaturen/clair-de-config"
+        "repo": "aaronmaturen/claude-config"
       },
       "keywords": [
         "workflow",

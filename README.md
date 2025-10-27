@@ -1,4 +1,4 @@
-# clair-de-config
+# atm
 
 _A Claude Code plugin and synchronization system for professional development workflows_
 
@@ -9,8 +9,8 @@ _A Claude Code plugin and synchronization system for professional development wo
 
 Now available as a **Claude Code Plugin**! Get instant access to professional development workflows, JIRA integration, PR review tools, and powerful MCP servers.
 
-`clair-de-config` is both:
-1. **A Claude Code Plugin** - Install via `/plugin install clair-de-config@github` for instant workflow commands
+`atm` is both:
+1. **A Claude Code Plugin** - Install via `/plugin install atm@github` for instant workflow commands
 2. **A Configuration Sync System** - Traditional shell integration for keeping settings synchronized across machines
 
 In the beginning, there was chaos. Configuration files scattered across machines like socks in a cosmic dryer. Settings duplicated, aliases forgotten, and MCP servers living in blissful isolation. This was widely regarded as a bad move.
@@ -18,7 +18,7 @@ In the beginning, there was chaos. Configuration files scattered across machines
 ## What It Actually Does
 
 ### As a Plugin
-- **14 Workflow Commands**: `/atm-commit-msg`, `/atm-pr-review`, `/atm-scaffold`, and more
+- **14 Workflow Commands**: `/commit-msg`, `/pr-review`, `/scaffold`, and more
 - **MCP Servers**: Pre-configured Context7 (documentation) and Serena (code analysis)
 - **JIRA Integration**: Ticket research and commit message generation
 - **PR Review Tools**: Comprehensive analysis with educational context
@@ -47,14 +47,14 @@ In the beginning, there was chaos. Configuration files scattered across machines
 
 ### As a Claude Code Plugin (Recommended)
 
-The easiest way to use clair-de-config is as a Claude Code plugin:
+The easiest way to use atm is as a Claude Code plugin:
 
 ```bash
 # Add the marketplace
 /plugin marketplace add aaronmaturen/clair-de-config
 
 # Install the plugin
-/plugin install clair-de-config@aaronmaturen-plugins
+/plugin install atm@aaronmaturen-plugins
 
 # Set up global rules (optional)
 /setup-rules
@@ -64,10 +64,10 @@ The easiest way to use clair-de-config is as a Claude Code plugin:
 
 ```bash
 # Clone the repository
-git clone https://github.com/aaronmaturen/clair-de-config.git
+git clone https://github.com/aaronmaturen/claude-config.git
 
 # Install from local path
-/plugin install /path/to/clair-de-config
+/plugin install /path/to/claude-config
 ```
 
 This gives you instant access to all 15 workflow commands and pre-configured MCP servers.
@@ -79,8 +79,8 @@ See [PLUGIN.md](PLUGIN.md) for complete plugin documentation.
 For shell integration and synchronization features:
 
 ```bash
-git clone https://github.com/aaronmaturen/clair-de-config.git
-cd clair-de-config
+git clone https://github.com/aaronmaturen/claude-config.git
+cd claude-config
 ./install.sh  # This script now exists and is, indeed, magnificent
 ```
 
@@ -99,29 +99,29 @@ All 14 workflow commands are available immediately after installation:
 
 ```bash
 # Development Workflow
-/atm-commit-msg              # Generate JIRA-linked commit messages
-/atm-pr-review               # Comprehensive PR analysis
-/atm-implement-pr-feedback   # Systematically implement PR feedback
-/atm-self-review             # Self-code review before PR
-/atm-jira                    # JIRA ticket research and planning
+/commit-msg              # Generate JIRA-linked commit messages
+/pr-review               # Comprehensive PR analysis
+/implement-pr-feedback   # Systematically implement PR feedback
+/self-review             # Self-code review before PR
+/jira                    # JIRA ticket research and planning
 
 # Code Analysis
-/atm-arch-review             # Architecture review
-/atm-simplify                # Code simplification
-/atm-proof                   # Mathematical analysis
-/atm-bug-investigation       # Systematic bug debugging
-/atm-feature-investigation   # Feature requirement analysis
-/atm-spike-investigation     # Technical spike research
+/arch-review             # Architecture review
+/simplify                # Code simplification
+/proof                   # Mathematical analysis
+/bug-investigation       # Systematic bug debugging
+/feature-investigation   # Feature requirement analysis
+/spike-investigation     # Technical spike research
 
 # Project Setup
-/atm-scaffold                # Interactive project scaffolding
+/scaffold                # Interactive project scaffolding
 
 # Session Management
-/atm-clear                   # Session summary and context clearing
-/atm-reflect                 # Conversation pattern analysis
+/clear                   # Session summary and context clearing
+/reflect                 # Conversation pattern analysis
 
 # Configuration
-/setup-rules                 # Install global rules
+/setup-rules             # Install global rules
 ```
 
 See [PLUGIN.md](PLUGIN.md) for detailed command documentation and examples.
@@ -139,11 +139,11 @@ clair-status            # Check synchronization status and health
 ## Project Structure
 
 ```
-clair-de-config/
+claude-config/
 ├── .claude-plugin/
 │   └── plugin.json     # Plugin manifest
 ├── commands/           # Slash commands for plugin
-│   ├── atm-*.md        # 14 workflow commands
+│   ├── *.md            # 14 workflow commands
 │   └── setup-rules.md  # Rules installation command
 ├── claude/             # Legacy configuration directory
 │   ├── CLAUDE.md       # Main Claude instructions (references rule modules)
