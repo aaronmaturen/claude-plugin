@@ -17,18 +17,13 @@
     "commit-messages",
     "scaffolding",
     "mcp",
-    "context7",
-    "serena"
+    "context7"
   ],
   "commands": "./commands/",
   "mcpServers": {
     "Context7": {
       "command": "npx",
       "args": ["-y", "@upstash/context7-mcp"]
-    },
-    "serena": {
-      "command": "uvx",
-      "args": ["--from", "git+https://github.com/oraios/serena", "serena-mcp-server"]
     }
   }
 }
