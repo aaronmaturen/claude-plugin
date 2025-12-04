@@ -1,8 +1,18 @@
-# Feature Investigation - UltraThink Implementation Analysis
+# Feature Investigation - AC-Driven Implementation Planning
 
-Investigate and plan the implementation of a new feature using comprehensive analysis across multiple repositories (frontend/backend), then create a detailed implementation plan.
+Investigate and plan the implementation of a new feature with **Acceptance Criteria as the central organizing principle**. Every task, test, and verification ties back to specific AC.
 
 **Feature Request:** $ARGUMENTS (JIRA issue key or feature description)
+
+## Philosophy: AC-First Development
+
+**Why features fail:** Acceptance criteria get buried in documentation, forgotten during implementation, and only remembered during QA when it's expensive to fix.
+
+**This command ensures:**
+1. AC are validated and clarified BEFORE any planning
+2. Every task links to specific AC
+3. Checkpoints verify AC progress throughout development
+4. PR checklist explicitly maps to AC
 
 ## Investigation Process:
 
@@ -100,6 +110,108 @@ if [[ "$DESCRIPTION" =~ "API" ]] || [[ "$DESCRIPTION" =~ "backend" ]] || [[ "$LA
     REPOS_AFFECTED="$REPOS_AFFECTED api-workplace"
 fi
 ```
+
+### 1.5 **GATE: Acceptance Criteria Validation** (CRITICAL)
+
+**⚠️ STOP HERE if AC are missing or unclear. Do not proceed to planning.**
+
+This is the most important step. Poor AC = wasted development time.
+
+#### Extract and Display AC
+```bash
+echo "═══════════════════════════════════════════════════════════════"
+echo "                 ACCEPTANCE CRITERIA REVIEW                     "
+echo "═══════════════════════════════════════════════════════════════"
+echo ""
+
+if [[ -n "$ACCEPTANCE_CRITERIA" ]] && [[ "$ACCEPTANCE_CRITERIA" != "null" ]] && [[ "$ACCEPTANCE_CRITERIA" != "To be defined" ]]; then
+    echo "📋 Acceptance Criteria from JIRA:"
+    echo "─────────────────────────────────"
+    echo "$ACCEPTANCE_CRITERIA"
+    echo ""
+else
+    echo "⚠️  NO ACCEPTANCE CRITERIA FOUND IN JIRA"
+    echo ""
+    echo "Before proceeding, we MUST define AC. Ask the product owner or define them now."
+    echo ""
+fi
+
+echo "═══════════════════════════════════════════════════════════════"
+```
+
+#### AC Quality Checklist
+
+**Claude, evaluate each AC against these criteria:**
+
+| Quality Check | Pass? | Issue |
+|---------------|-------|-------|
+| **Specific** - Is it clear what "done" looks like? | | |
+| **Measurable** - Can we write a test for it? | | |
+| **Achievable** - Is it technically feasible? | | |
+| **Relevant** - Does it tie to user value? | | |
+| **Testable** - Can QA verify it? | | |
+
+#### AC Clarification Questions
+
+**For each unclear AC, generate clarifying questions:**
+
+```markdown
+## AC Clarification Needed
+
+### AC 1: "[Original AC text]"
+❓ Questions:
+- [What specific behavior is expected?]
+- [What are the edge cases?]
+- [How should errors be handled?]
+
+### AC 2: "[Original AC text]"
+❓ Questions:
+- [...]
+```
+
+#### Missing AC Detection
+
+**Check for common missing AC:**
+- [ ] Error handling - What happens when things fail?
+- [ ] Loading states - What does the user see while waiting?
+- [ ] Empty states - What if there's no data?
+- [ ] Permissions - Who can access this?
+- [ ] Mobile/responsive - Does it need to work on mobile?
+- [ ] Accessibility - Any a11y requirements?
+- [ ] Performance - Any speed requirements?
+- [ ] Analytics - What events need tracking?
+
+#### AC Refinement Output
+
+**Create a canonical AC list with IDs for tracking:**
+
+```markdown
+## Refined Acceptance Criteria
+
+### Functional Requirements
+- **AC-1**: [Clear, testable criterion]
+  - Test: [How to verify]
+  - Edge cases: [What to watch for]
+
+- **AC-2**: [Clear, testable criterion]
+  - Test: [How to verify]
+  - Edge cases: [What to watch for]
+
+### Non-Functional Requirements
+- **AC-NFR-1**: [Performance/security/accessibility criterion]
+  - Test: [How to verify]
+  - Threshold: [Specific number if applicable]
+
+### Out of Scope (Explicitly)
+- [Thing that might be assumed but isn't included]
+```
+
+**⚠️ CHECKPOINT: Before proceeding, confirm:**
+1. All AC are clear and testable
+2. Missing AC have been identified and added
+3. Clarifying questions have been answered (or noted for follow-up)
+
+---
 
 ### 2. **Feature Analysis & Scoping**
 - Parse feature requirements and acceptance criteria
@@ -257,6 +369,32 @@ fi
 **Priority:** [Priority]
 **Target Release:** [Version/Sprint]
 
+---
+## 🎯 ACCEPTANCE CRITERIA (Keep Visible Throughout Development)
+
+> **⚠️ This section is the source of truth. Every task, test, and PR must trace back here.**
+
+### Functional Requirements
+| ID | Criterion | Status | Verified By |
+|----|-----------|--------|-------------|
+| AC-1 | [Criterion] | ⬜ Not Started | |
+| AC-2 | [Criterion] | ⬜ Not Started | |
+| AC-3 | [Criterion] | ⬜ Not Started | |
+
+### Non-Functional Requirements
+| ID | Criterion | Threshold | Status |
+|----|-----------|-----------|--------|
+| AC-NFR-1 | [Performance criterion] | [e.g., < 200ms] | ⬜ |
+| AC-NFR-2 | [Accessibility criterion] | [e.g., WCAG AA] | ⬜ |
+
+### Status Legend
+- ⬜ Not Started
+- 🔨 In Progress
+- ✅ Implemented
+- ✔️ Verified (tested and confirmed)
+
+---
+
 ## Executive Summary
 
 ### Feature Overview
@@ -269,16 +407,13 @@ fi
 
 ### Scope
 - **In Scope:** [What we will build]
-- **Out of Scope:** [What we won't build]
+- **Out of Scope:** [What we won't build - be explicit!]
 - **Future Considerations:** [What might come later]
 
 ## Feature Details
 
 ### User Stories
 [List key user stories with As a/I want to/So that format]
-
-### Acceptance Criteria
-[Checkboxes for measurable criteria]
 
 ### Success Metrics
 [How we'll measure success - adoption, performance, quality]
@@ -398,24 +533,45 @@ fi
 
 ## Epic: [Feature Name]
 
+---
+## 🎯 AC-to-Task Mapping
+
+> **Every task must link to at least one AC. If a task doesn't serve an AC, question if it's needed.**
+
+| AC ID | Criterion | Tasks | Test Tasks |
+|-------|-----------|-------|------------|
+| AC-1 | [Criterion] | FE-001, BE-001 | TEST-001 |
+| AC-2 | [Criterion] | FE-002, FE-003, BE-002 | TEST-002 |
+| AC-3 | [Criterion] | BE-003 | TEST-003 |
+| AC-NFR-1 | [Performance] | BE-004 | PERF-001 |
+
+---
+
 ### Frontend Tasks
-[Components Development - FE-xxx tasks with story points]
-[State Management - FE-xxx tasks with story points]
-[API Integration - FE-xxx tasks with story points]
-[Testing - FE-xxx tasks with story points]
+
+| Task | Description | AC | Points | Depends On |
+|------|-------------|-----|--------|------------|
+| FE-001 | [Description] | AC-1 | 3 | - |
+| FE-002 | [Description] | AC-2 | 2 | FE-001 |
+| FE-003 | [Description] | AC-2 | 2 | FE-001 |
+| FE-TEST-001 | Unit tests for AC-1 | AC-1 | 2 | FE-001 |
+| FE-TEST-002 | Integration tests for AC-2 | AC-2 | 2 | FE-002, FE-003 |
 
 ### Backend Tasks
-[API Development - BE-xxx tasks with story points]
-[Database - BE-xxx tasks with story points]
-[Business Logic - BE-xxx tasks with story points]
-[Testing - BE-xxx tasks with story points]
+
+| Task | Description | AC | Points | Depends On |
+|------|-------------|-----|--------|------------|
+| BE-001 | [Description] | AC-1 | 3 | - |
+| BE-002 | [Description] | AC-2 | 3 | BE-001 |
+| BE-003 | [Description] | AC-3 | 2 | - |
+| BE-TEST-001 | API tests for AC-1 | AC-1 | 2 | BE-001 |
 
 ### DevOps Tasks
-[Infrastructure - DO-xxx tasks with story points]
-[Deployment - DO-xxx tasks with story points]
 
-### Documentation Tasks
-[DOC-xxx tasks with story points]
+| Task | Description | AC | Points |
+|------|-------------|-----|--------|
+| DO-001 | Feature flag setup | ALL | 1 |
+| DO-002 | Monitoring for [metric] | AC-NFR-1 | 2 |
 
 ## Task Dependencies
 [Mermaid diagram showing task dependencies - generate in report]
@@ -424,11 +580,73 @@ fi
 - **Frontend:** [X] points
 - **Backend:** [Y] points
 - **DevOps:** [Z] points
-- **Documentation:** [W] points
+- **Testing:** [T] points
 - **Total:** [Total] points
 
 ## Sprint Allocation
 [Sprint breakdown with point allocation]
+
+---
+## AC Coverage Check
+
+**Before starting each sprint, verify:**
+- [ ] Every AC has at least one implementation task
+- [ ] Every AC has at least one test task
+- [ ] No orphan tasks (tasks without AC linkage)
+```
+
+#### PR Checklist Template:
+
+**Generate this file for use during PR review:**
+
+```markdown
+# PR Checklist: [[FEATURE_ID]] - [PR Title]
+
+## 🎯 Acceptance Criteria Verification
+
+**This PR addresses the following AC:**
+
+| AC ID | Criterion | Implemented | Test Added | Manually Verified |
+|-------|-----------|-------------|------------|-------------------|
+| AC-1 | [Criterion] | ⬜ | ⬜ | ⬜ |
+| AC-2 | [Criterion] | ⬜ | ⬜ | ⬜ |
+
+## Pre-Merge Checklist
+
+### Code Quality
+- [ ] Code follows project conventions
+- [ ] No unnecessary changes outside feature scope
+- [ ] Error handling covers edge cases from AC
+
+### Testing
+- [ ] Unit tests cover happy path for each AC
+- [ ] Unit tests cover error cases for each AC
+- [ ] Integration tests added (if applicable)
+- [ ] Manual testing completed for each AC
+
+### AC-Specific Verification
+
+#### AC-1: [Criterion]
+- [ ] Implemented as specified
+- [ ] Test proves it works: [link to test or describe]
+- [ ] Edge case handled: [describe]
+
+#### AC-2: [Criterion]
+- [ ] Implemented as specified
+- [ ] Test proves it works: [link to test or describe]
+- [ ] Edge case handled: [describe]
+
+### Non-Functional Requirements
+- [ ] AC-NFR-1: [Performance] - Measured: [result]
+- [ ] AC-NFR-2: [Accessibility] - Verified: [how]
+
+## Remaining AC (if partial PR)
+| AC ID | Status | Planned PR |
+|-------|--------|------------|
+| AC-3 | Not started | PR #XXX |
+
+## Screenshots/Videos (if UI changes)
+[Attach evidence of AC being met]
 ```
 
 ### 8. **Create Visual Diagrams**
@@ -475,15 +693,73 @@ Generating documentation...
 View complete plan in report directory.
 ```
 
+---
+
+## Development Checkpoints (Use During Implementation)
+
+### Checkpoint 1: Before Starting Any Task
+```
+🎯 AC Check:
+- Which AC does this task address? [AC-X]
+- What does "done" look like for this AC?
+- What test will prove this AC is met?
+```
+
+### Checkpoint 2: Before Creating a PR
+```
+🎯 PR Readiness Check:
+- [ ] I can identify which AC this PR addresses
+- [ ] I have a test for each AC in this PR
+- [ ] I have manually verified each AC works
+- [ ] I have updated AC status in implementation-plan.md
+```
+
+### Checkpoint 3: Before Merging
+```
+🎯 Merge Gate:
+- [ ] All AC in this PR are marked ✅ Implemented
+- [ ] Reviewer has verified AC implementation
+- [ ] No AC regression in existing functionality
+```
+
+### Checkpoint 4: Before Feature Release
+```
+🎯 Release Gate:
+- [ ] ALL AC are marked ✔️ Verified
+- [ ] QA has signed off on each AC
+- [ ] No outstanding clarification questions
+- [ ] Performance thresholds met (AC-NFR-*)
+```
+
+---
+
+## Quick Reference: AC Status Updates
+
+**During development, keep the AC table updated:**
+
+```bash
+# In implementation-plan.md, update AC status:
+# ⬜ Not Started → 🔨 In Progress → ✅ Implemented → ✔️ Verified
+
+# Example:
+| AC-1 | User can login with email | ✅ Implemented | FE-001, BE-001 |
+| AC-2 | Error shown for invalid creds | 🔨 In Progress | |
+```
+
+---
+
 ## Notes:
-- Focuses on planning new features rather than investigating bugs
-- Includes comprehensive technical design documentation
-- Creates detailed task breakdowns with story points
+- **AC-First**: Every planning decision traces back to acceptance criteria
+- **Checkpoints**: Built-in gates prevent missing AC during development
+- **PR Checklist**: Generated template ensures AC verification before merge
+- **Task Mapping**: Every task links to specific AC (no orphan work)
 - Handles multi-repository feature planning
-- Includes architecture diagrams and user flows
-- Provides phased implementation approach
 - Includes risk analysis and mitigation strategies
-- Creates sprint planning and team allocation
 - Generates monitoring and rollout strategies
-- Links to design mockups and specifications
-- Provides clear success criteria and DoD
+
+## Key Differences from Standard Planning:
+1. **Gate at Step 1.5** - Won't proceed without clear AC
+2. **AC Table at Top** - Always visible, not buried in docs
+3. **AC-to-Task Mapping** - Every task justifies its existence
+4. **PR Checklist Template** - Forces AC verification before merge
+5. **Development Checkpoints** - Reminders during implementation

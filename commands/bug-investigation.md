@@ -4,6 +4,16 @@ Investigate a JIRA bug using the 5 Whys technique to identify root causes across
 
 **Bug ID:** $ARGUMENTS (JIRA issue key, e.g., PROJ-1234)
 
+## Philosophy: Verification-Driven Bug Fixing
+
+**Why bugs "reopen":** Fixes are merged without explicit verification criteria, edge cases are missed, and regression tests aren't added.
+
+**This command ensures:**
+1. Reproduction steps are verified BEFORE investigating
+2. Fix Verification Criteria (FVC) are defined for every bug
+3. Every fix must have a test that would have caught the bug
+4. PR checklist maps to specific FVC
+
 ## Input Handling
 
 If no JIRA bug ID is provided as an argument, the command will prompt you to describe the bug you're investigating:
@@ -142,6 +152,109 @@ fi
 - Check for reproduction steps
 - Review any error messages or logs mentioned
 - Identify if it's a full-stack issue requiring both repos
+
+### 3.5 **GATE: Define Fix Verification Criteria (FVC)** (CRITICAL)
+
+**⚠️ Before deep investigation, define how we'll know the bug is ACTUALLY fixed.**
+
+Poor verification = bug "fixed" but reopens in a week.
+
+#### Reproduction Verification
+```markdown
+## Reproduction Confirmed
+
+### Environment
+- [ ] Browser/OS: [e.g., Chrome 120 on macOS]
+- [ ] User role/permissions: [e.g., Admin user]
+- [ ] Data state: [e.g., User with 3+ saved items]
+
+### Steps to Reproduce
+1. [Exact step 1]
+2. [Exact step 2]
+3. [Exact step 3]
+
+### Expected Result
+[What should happen]
+
+### Actual Result
+[What actually happens - include error messages]
+
+### Reproduction Rate
+- [ ] 100% reproducible
+- [ ] Intermittent (X out of Y attempts)
+- [ ] Environment-specific
+```
+
+#### Fix Verification Criteria (FVC)
+
+**For every bug, define explicit criteria:**
+
+```markdown
+## Fix Verification Criteria
+
+### Primary FVC (Must pass to close bug)
+| ID | Criterion | Test Type | Verified |
+|----|-----------|-----------|----------|
+| FVC-1 | [Original bug scenario works correctly] | Manual + Automated | ⬜ |
+| FVC-2 | [Edge case 1 works] | Automated | ⬜ |
+| FVC-3 | [Edge case 2 works] | Automated | ⬜ |
+
+### Regression FVC (Must not break)
+| ID | Criterion | Test Exists | Verified |
+|----|-----------|-------------|----------|
+| FVC-R1 | [Related feature still works] | ⬜ | ⬜ |
+| FVC-R2 | [Similar workflow unaffected] | ⬜ | ⬜ |
+
+### Non-Functional FVC
+| ID | Criterion | Threshold | Verified |
+|----|-----------|-----------|----------|
+| FVC-NF1 | Performance not degraded | [< X ms] | ⬜ |
+| FVC-NF2 | No new console errors | 0 errors | ⬜ |
+```
+
+#### Edge Case Discovery
+
+**Before fixing, identify edge cases that might be missed:**
+
+| Scenario | Could This Also Fail? | Add to FVC? |
+|----------|----------------------|-------------|
+| Empty state | What if user has no data? | |
+| Large data | What if user has 1000+ items? | |
+| Concurrent users | What if two users do this simultaneously? | |
+| Slow network | What if request times out? | |
+| Permissions | What if user loses permissions mid-action? | |
+| Partial data | What if some fields are null? | |
+
+#### Test Requirement
+
+**Every bug fix MUST include:**
+- [ ] A test that **would have caught this bug** before the fix
+- [ ] The test must **fail without the fix** and **pass with the fix**
+- [ ] Edge cases from FVC-2, FVC-3, etc. should have tests
+
+```markdown
+## Required Tests
+
+### Test that would have caught this bug:
+```typescript
+it('should [expected behavior] when [condition]', () => {
+  // This test fails on current main branch
+  // This test passes with the fix
+});
+```
+
+### Edge case tests:
+- [ ] Test for FVC-2: [description]
+- [ ] Test for FVC-3: [description]
+```
+
+**⚠️ CHECKPOINT: Before proceeding to deep investigation:**
+1. Bug is reproducible with documented steps
+2. FVC are defined (at minimum: original scenario + 2 edge cases)
+3. Regression areas identified
+4. Test strategy is clear
+
+---
 
 ### 4. **Multi-Repository Investigation Strategy**
 
@@ -290,9 +403,33 @@ fi
 
 **Bug:** [Summary]
 **Date:** [Investigation Date]
-**Investigator:** Claude
 **Severity:** [Priority]
 **Status:** [Current Status]
+
+---
+## 🎯 FIX VERIFICATION CRITERIA (Track Throughout Fix)
+
+> **⚠️ Bug is NOT fixed until ALL FVC are verified. No exceptions.**
+
+### Primary FVC
+| ID | Criterion | Test Added | Verified |
+|----|-----------|------------|----------|
+| FVC-1 | Original bug scenario works | ⬜ | ⬜ |
+| FVC-2 | [Edge case 1] | ⬜ | ⬜ |
+| FVC-3 | [Edge case 2] | ⬜ | ⬜ |
+
+### Regression FVC
+| ID | Criterion | Test Exists | Verified |
+|----|-----------|-------------|----------|
+| FVC-R1 | [Related feature] | ⬜ | ⬜ |
+
+### Status Legend
+- ⬜ Not verified
+- 🔨 In progress
+- ✅ Test added
+- ✔️ Verified (test passes + manual check)
+
+---
 
 ## Executive Summary
 
@@ -730,15 +867,119 @@ Summary:
 View full investigation in report directory.
 ```
 
+---
+
+## Bug Fix PR Checklist Template
+
+**Generate this file for use during PR review:**
+
+```markdown
+# Bug Fix PR Checklist: [[BUG_ID]] - [PR Title]
+
+## 🎯 Fix Verification Criteria
+
+**This PR fixes the following:**
+
+| FVC ID | Criterion | Test Added | Manually Verified |
+|--------|-----------|------------|-------------------|
+| FVC-1 | [Original bug scenario] | ⬜ | ⬜ |
+| FVC-2 | [Edge case 1] | ⬜ | ⬜ |
+| FVC-3 | [Edge case 2] | ⬜ | ⬜ |
+
+## Pre-Merge Checklist
+
+### The Fix
+- [ ] Fix addresses the root cause (not just symptoms)
+- [ ] Fix is minimal and focused (no unrelated changes)
+- [ ] Fix doesn't introduce new edge cases
+
+### Required Tests
+- [ ] **Regression test added** that would have caught this bug
+- [ ] Test fails without the fix (verified on main branch)
+- [ ] Test passes with the fix
+- [ ] Edge case tests added for FVC-2, FVC-3
+
+### Regression Check
+- [ ] Related features still work (FVC-R1, FVC-R2)
+- [ ] No new console errors
+- [ ] No performance degradation
+
+### FVC-Specific Verification
+
+#### FVC-1: [Original bug scenario]
+- [ ] Reproduced bug on main branch
+- [ ] Verified fix resolves the issue
+- [ ] Test: `describe('[test name]')` added
+
+#### FVC-2: [Edge case]
+- [ ] Scenario tested manually
+- [ ] Test added: `it('should...')`
+
+### Manual Testing Evidence
+- [ ] Screenshot/video of bug (before)
+- [ ] Screenshot/video of fix (after)
+- [ ] Edge cases manually tested
+
+## Root Cause Addressed?
+
+| Question | Answer |
+|----------|--------|
+| Does this fix the root cause or just the symptom? | |
+| Could this bug recur in similar code elsewhere? | |
+| Should we add a lint rule/pattern to prevent this? | |
+```
+
+---
+
+## Verification Checkpoints (Use During Bug Fix)
+
+### Checkpoint 1: Before Writing Fix
+```
+🎯 FVC Check:
+- Do I have clear FVC defined?
+- Do I know what "fixed" looks like for each FVC?
+- Have I identified edge cases?
+```
+
+### Checkpoint 2: Before Creating PR
+```
+🎯 Test Check:
+- [ ] I have a test that fails without my fix
+- [ ] I have a test that passes with my fix
+- [ ] Edge cases have tests
+- [ ] I have manually verified each FVC
+```
+
+### Checkpoint 3: Before Merging
+```
+🎯 Merge Gate:
+- [ ] All FVC are marked ✔️ Verified
+- [ ] Reviewer has verified reproduction + fix
+- [ ] No regression in related features
+```
+
+### Checkpoint 4: After Deployment
+```
+🎯 Production Verification:
+- [ ] Bug verified fixed in production
+- [ ] Monitoring shows no new errors
+- [ ] Related features working correctly
+```
+
+---
+
 ## Notes:
+- **FVC-First**: Every bug fix must have explicit verification criteria
+- **Test Requirement**: No fix merges without a regression test
+- **Edge Cases**: At minimum, original scenario + 2 edge cases
 - Integrates with JIRA CLI for bug details
 - Handles multi-repository investigations (frontend/backend)
-- Detects which repos are available locally
-- Requests specific information for missing repos
 - Uses 5 Whys methodology across the full stack
-- Identifies integration/communication issues
-- Creates comprehensive documentation
-- Includes cross-repo code analysis
-- Generates actionable recommendations for both systems
-- Creates visual diagrams showing full-stack flow
-- Links related issues and documentation
+- Creates comprehensive documentation with FVC tracking
+
+## Key Differences from Standard Bug Investigation:
+1. **Gate at Step 3.5** - Define FVC before deep investigation
+2. **FVC Table at Top** - Always visible, tracks verification status
+3. **Test Requirement** - Must have test that would have caught bug
+4. **Edge Case Discovery** - Proactively find related scenarios
+5. **PR Checklist** - Explicit FVC verification before merge
