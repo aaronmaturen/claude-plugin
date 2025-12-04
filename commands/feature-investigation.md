@@ -254,7 +254,6 @@ fi
 
 **Feature:** [Summary]
 **Planning Date:** [Date]
-**Planned By:** Claude
 **Priority:** [Priority]
 **Target Release:** [Version/Sprint]
 
@@ -276,289 +275,91 @@ fi
 ## Feature Details
 
 ### User Stories
-1. **As a** [user type] **I want to** [action] **so that** [benefit]
-2. **As a** [user type] **I want to** [action] **so that** [benefit]
+[List key user stories with As a/I want to/So that format]
 
 ### Acceptance Criteria
-- [ ] [Criterion 1]
-- [ ] [Criterion 2]
-- [ ] [Criterion 3]
+[Checkboxes for measurable criteria]
 
 ### Success Metrics
-- **Adoption:** [Target usage]
-- **Performance:** [Response time goals]
-- **Quality:** [Error rate targets]
+[How we'll measure success - adoption, performance, quality]
 
 ## Implementation Approach
 
 ### High-Level Architecture
-```mermaid
-graph TB
-    subgraph "Frontend (edu-clients)"
-        A[New Components] --> B[State Management]
-        B --> C[API Service Layer]
-    end
-    
-    subgraph "Backend (api-workplace)"
-        D[API Endpoints] --> E[Business Logic]
-        E --> F[Data Layer]
-        F --> G[Database]
-    end
-    
-    C -->|REST API| D
-    
-    style A fill:#9f9,stroke:#333
-    style D fill:#99f,stroke:#333
-```
+[Mermaid diagram placeholder - generate detailed diagram in report]
 
 ### Technology Stack
-- **Frontend:** React, TypeScript, [libraries]
-- **Backend:** Python, FastAPI, [frameworks]
-- **Database:** PostgreSQL with [extensions]
-- **Infrastructure:** [deployment details]
+- **Frontend:** [Technologies]
+- **Backend:** [Technologies]
+- **Database:** [Technologies]
+- **Infrastructure:** [Details]
 
 ## Technical Design
 
 ### Frontend Architecture
-
-#### Component Structure
-```
-edu-clients/
-├── src/
-│   ├── features/
-│   │   └── [feature-name]/
-│   │       ├── components/
-│   │       ├── hooks/
-│   │       ├── services/
-│   │       ├── types/
-│   │       └── tests/
-```
-
-#### State Management
-- **Local State:** [Component state needs]
-- **Global State:** [Redux/Context needs]
-- **Server State:** [React Query/SWR usage]
+[Component structure, state management approach, API integration strategy]
 
 ### Backend Architecture
-
-#### API Design
-```yaml
-# OpenAPI Specification Preview
-paths:
-  /api/v1/[feature]:
-    get:
-      summary: [Description]
-      parameters: [...]
-    post:
-      summary: [Description]
-      requestBody: [...]
-```
-
-#### Data Models
-```python
-# Example model structure
-class FeatureModel(BaseModel):
-    id: UUID
-    name: str
-    created_at: datetime
-    # ... additional fields
-```
+[API design approach, data models overview, business logic organization]
 
 ### Integration Points
-
-#### API Contract
-```typescript
-// Request/Response types
-interface FeatureRequest {
-  // fields
-}
-
-interface FeatureResponse {
-  // fields
-}
-```
+[API contracts, error handling, data validation]
 
 ## Implementation Phases
 
-### Phase 1: Foundation (Week 1-2)
-- [ ] Design database schema
-- [ ] Create API endpoints skeleton
-- [ ] Setup frontend routing
-- [ ] Implement basic data models
-- [ ] Write initial unit tests
+### Phase 1: Foundation
+[Core infrastructure tasks with checkboxes]
 
-### Phase 2: Core Features (Week 3-4)
-- [ ] Complete API business logic
-- [ ] Build main UI components
-- [ ] Implement state management
-- [ ] Add integration tests
-- [ ] Setup error handling
+### Phase 2: Core Features
+[Main feature development tasks with checkboxes]
 
-### Phase 3: Enhancement (Week 5-6)
-- [ ] Add advanced features
-- [ ] Optimize performance
-- [ ] Implement caching
-- [ ] Complete E2E tests
-- [ ] Write documentation
+### Phase 3: Enhancement
+[Polish and optimization tasks with checkboxes]
 
-### Phase 4: Launch Prep (Week 7-8)
-- [ ] Feature flag configuration
-- [ ] Load testing
-- [ ] Security review
-- [ ] Deployment planning
-- [ ] Team training
+### Phase 4: Launch Prep
+[Deployment and monitoring setup with checkboxes]
 
 ## Risk Analysis
 
 ### Technical Risks
 | Risk | Probability | Impact | Mitigation |
 |------|-------------|--------|------------|
-| Performance issues | Medium | High | Early load testing |
-| Integration complexity | High | Medium | Incremental integration |
-| Data migration | Low | High | Reversible migrations |
+[List key technical risks]
 
 ### Dependencies
-- [ ] Design system components ready
-- [ ] API rate limits increased
-- [ ] Database capacity verified
-- [ ] Third-party service contracts
+[List external dependencies and prerequisites]
 
 ## Testing Strategy
 
 ### Test Coverage Goals
-- **Unit Tests:** 90% coverage
-- **Integration Tests:** All API endpoints
-- **E2E Tests:** Critical user flows
+[Unit, integration, and E2E coverage targets]
 
 ### Test Plan
-1. **Unit Testing**
-   - Frontend components
-   - Backend services
-   - Utility functions
-
-2. **Integration Testing**
-   - API contract validation
-   - Database operations
-   - External service mocks
-
-3. **E2E Testing**
-   - Happy path scenarios
-   - Error scenarios
-   - Performance scenarios
+[High-level testing approach by type]
 
 ## Rollout Strategy
 
 ### Feature Flags
-```javascript
-// Feature flag configuration
-{
-  "feature-name": {
-    "enabled": false,
-    "rolloutPercentage": 0,
-    "allowedUsers": ["beta-testers"]
-  }
-}
-```
+[Feature flag configuration approach]
 
 ### Rollout Phases
-1. **Internal Testing:** Dev team only
-2. **Beta Release:** 5% of users
-3. **Gradual Rollout:** 25%, 50%, 75%
-4. **Full Release:** 100% availability
-
-## Monitoring & Metrics
-
-### Key Metrics
-- **Usage:** Feature adoption rate
-- **Performance:** P95 response time
-- **Errors:** Error rate by endpoint
-- **Business:** Conversion impact
-
-### Dashboards
-- [ ] Create Grafana dashboard
-- [ ] Setup Sentry alerts
-- [ ] Configure PagerDuty
-- [ ] Define SLOs
-
-## Documentation Plan
-
-### Technical Documentation
-- [ ] API documentation
-- [ ] Architecture diagrams
-- [ ] Database schema
-- [ ] Deployment guide
-
-### User Documentation
-- [ ] Feature guide
-- [ ] Video tutorials
-- [ ] FAQ section
-- [ ] Release notes
-
-## Sprint Planning
-
-### Sprint 1 Tasks
-- [ ] Database design review
-- [ ] API endpoint scaffolding
-- [ ] Frontend component prototypes
-- [ ] Testing framework setup
-
-### Sprint 2 Tasks
-- [ ] Core business logic
-- [ ] UI implementation
-- [ ] Integration development
-- [ ] Initial testing
-
-### Sprint 3 Tasks
-- [ ] Feature completion
-- [ ] Performance optimization
-- [ ] Documentation
-- [ ] Deployment preparation
-
-## Team Responsibilities
-
-### Frontend Team
-- **Lead:** [Name]
-- **Developers:** [Names]
-- **Deliverables:** UI components, state management
-
-### Backend Team
-- **Lead:** [Name]
-- **Developers:** [Names]
-- **Deliverables:** API endpoints, business logic
-
-### QA Team
-- **Lead:** [Name]
-- **Testers:** [Names]
-- **Deliverables:** Test plans, automation
+[Phased rollout plan from internal to full release]
 
 ## Success Criteria
 
 ### Definition of Done
-- [ ] All acceptance criteria met
-- [ ] Code review completed
-- [ ] Tests passing (unit, integration, E2E)
-- [ ] Documentation complete
-- [ ] Performance benchmarks met
-- [ ] Security review passed
+[Checklist of completion requirements]
 
 ### Launch Criteria
-- [ ] Feature flag tested
-- [ ] Monitoring in place
-- [ ] Rollback plan documented
-- [ ] Team trained
-- [ ] Support prepared
+[Checklist of launch readiness requirements]
 
 ## Related Resources
-- Design mockups: [[Feature-Design-Mockups]]
-- API specs: [[Feature-API-Specification]]
-- Test plans: [[Feature-Test-Plans]]
-- Previous features: [[Similar-Feature-1]], [[Similar-Feature-2]]
+[Links to design mockups, API specs, test plans, similar features]
 
 ---
 
 **Planning Complete:** [Date/Time]
 **Next Review:** [Date]
-**Implementation Start:** [Date]
 ```
 
 #### Technical Design Document:
@@ -566,85 +367,29 @@ interface FeatureResponse {
 # Technical Design: [[FEATURE_ID]]
 
 ## System Architecture
-
-### Component Diagram
-```mermaid
-graph LR
-    subgraph "Client Layer"
-        UI[React UI]
-        SM[State Manager]
-    end
-    
-    subgraph "API Layer"
-        GW[API Gateway]
-        AUTH[Auth Service]
-        BL[Business Logic]
-    end
-    
-    subgraph "Data Layer"
-        CACHE[Redis Cache]
-        DB[(PostgreSQL)]
-        QUEUE[Message Queue]
-    end
-    
-    UI --> SM
-    SM --> GW
-    GW --> AUTH
-    GW --> BL
-    BL --> CACHE
-    BL --> DB
-    BL --> QUEUE
-```
-
-### Sequence Diagrams
-[Detailed interaction flows]
-
-### Data Flow
-[How data moves through the system]
+[Component diagram with mermaid - generate detailed version in report]
+[Sequence diagrams for key flows]
+[Data flow diagrams]
 
 ## API Specification
-
-### Endpoints
-[Detailed endpoint documentation]
-
-### Data Models
-[Complete schema definitions]
-
-### Error Handling
-[Error codes and responses]
+[Detailed endpoint documentation with request/response schemas]
+[Data models and relationships]
+[Error codes and handling]
 
 ## Security Design
-
-### Authentication
-[Auth flow and token management]
-
-### Authorization
-[Permission model and checks]
-
-### Data Protection
-[Encryption and privacy measures]
+[Authentication flow and token management]
+[Authorization model and permission checks]
+[Data protection and encryption measures]
 
 ## Performance Design
-
-### Caching Strategy
-[What to cache and TTLs]
-
-### Database Optimization
-[Indexes and query optimization]
-
-### Load Handling
-[Scaling approach]
+[Caching strategy and TTLs]
+[Database optimization and indexes]
+[Scaling and load handling approach]
 
 ## Deployment Architecture
-
-### Infrastructure
-[Cloud resources needed]
-
-### CI/CD Pipeline
-[Build and deploy process]
-
-### Monitoring Setup
-[Metrics and alerting]
+[Infrastructure requirements and cloud resources]
+[CI/CD pipeline and deployment process]
+[Monitoring, metrics, and alerting setup]
 ```
 
 #### Task Breakdown:
@@ -654,103 +399,36 @@ graph LR
 ## Epic: [Feature Name]
 
 ### Frontend Tasks
-
-#### Components Development
-- [ ] FE-001: Create main feature component (3 pts)
-- [ ] FE-002: Build form components (2 pts)
-- [ ] FE-003: Implement list view (2 pts)
-- [ ] FE-004: Add detail view (2 pts)
-- [ ] FE-005: Create modal dialogs (1 pt)
-
-#### State Management
-- [ ] FE-006: Setup Redux slices (2 pts)
-- [ ] FE-007: Implement selectors (1 pt)
-- [ ] FE-008: Add middleware (2 pts)
-
-#### API Integration
-- [ ] FE-009: Create API service layer (2 pts)
-- [ ] FE-010: Implement error handling (2 pts)
-- [ ] FE-011: Add retry logic (1 pt)
-
-#### Testing
-- [ ] FE-012: Unit tests for components (3 pts)
-- [ ] FE-013: Integration tests (2 pts)
-- [ ] FE-014: E2E test scenarios (3 pts)
+[Components Development - FE-xxx tasks with story points]
+[State Management - FE-xxx tasks with story points]
+[API Integration - FE-xxx tasks with story points]
+[Testing - FE-xxx tasks with story points]
 
 ### Backend Tasks
-
-#### API Development
-- [ ] BE-001: Create endpoint controllers (3 pts)
-- [ ] BE-002: Implement service layer (3 pts)
-- [ ] BE-003: Add validation logic (2 pts)
-- [ ] BE-004: Setup error responses (1 pt)
-
-#### Database
-- [ ] BE-005: Design schema (2 pts)
-- [ ] BE-006: Create migrations (1 pt)
-- [ ] BE-007: Add indexes (1 pt)
-- [ ] BE-008: Implement repositories (2 pts)
-
-#### Business Logic
-- [ ] BE-009: Core feature logic (5 pts)
-- [ ] BE-010: Permission checks (2 pts)
-- [ ] BE-011: Data transformations (2 pts)
-
-#### Testing
-- [ ] BE-012: Unit tests (3 pts)
-- [ ] BE-013: Integration tests (3 pts)
-- [ ] BE-014: Performance tests (2 pts)
+[API Development - BE-xxx tasks with story points]
+[Database - BE-xxx tasks with story points]
+[Business Logic - BE-xxx tasks with story points]
+[Testing - BE-xxx tasks with story points]
 
 ### DevOps Tasks
-
-#### Infrastructure
-- [ ] DO-001: Setup feature flags (1 pt)
-- [ ] DO-002: Configure monitoring (2 pts)
-- [ ] DO-003: Create dashboards (2 pts)
-
-#### Deployment
-- [ ] DO-004: Update CI/CD pipeline (2 pts)
-- [ ] DO-005: Create rollback plan (1 pt)
-- [ ] DO-006: Load test environment (3 pts)
+[Infrastructure - DO-xxx tasks with story points]
+[Deployment - DO-xxx tasks with story points]
 
 ### Documentation Tasks
-- [ ] DOC-001: API documentation (2 pts)
-- [ ] DOC-002: User guide (3 pts)
-- [ ] DOC-003: Technical docs (2 pts)
-- [ ] DOC-004: Release notes (1 pt)
+[DOC-xxx tasks with story points]
 
 ## Task Dependencies
-
-```mermaid
-graph TD
-    BE-005[Design Schema] --> BE-006[Create Migrations]
-    BE-006 --> BE-008[Implement Repos]
-    BE-008 --> BE-009[Core Logic]
-    BE-001[Create Controllers] --> BE-002[Service Layer]
-    BE-002 --> BE-009
-    
-    FE-001[Main Component] --> FE-002[Form Components]
-    FE-001 --> FE-003[List View]
-    FE-006[Redux Setup] --> FE-009[API Service]
-    FE-009 --> FE-002
-    
-    BE-009 --> FE-009
-    
-    style BE-005 fill:#f96
-    style FE-001 fill:#f96
-```
+[Mermaid diagram showing task dependencies - generate in report]
 
 ## Story Point Summary
-- **Frontend:** 28 points
-- **Backend:** 29 points  
-- **DevOps:** 11 points
-- **Documentation:** 8 points
-- **Total:** 76 points
+- **Frontend:** [X] points
+- **Backend:** [Y] points
+- **DevOps:** [Z] points
+- **Documentation:** [W] points
+- **Total:** [Total] points
 
 ## Sprint Allocation
-- **Sprint 1:** 26 points (Foundation)
-- **Sprint 2:** 25 points (Core Development)
-- **Sprint 3:** 25 points (Polish & Testing)
+[Sprint breakdown with point allocation]
 ```
 
 ### 8. **Create Visual Diagrams**
@@ -763,33 +441,20 @@ Generate Excalidraw diagrams for:
 
 ## Example Usage:
 ```
-Command: atm-feature-investigation PROJ-5678
+Command: /feature-investigation PROJ-5678
 
 Output:
 🆕 No previous planning found for PROJ-5678
 📁 Will create new planning at: ~/Documents/technical-analysis/features/PROJ-5678
-🔍 Starting fresh feature investigation...
 
-Fetching feature details from JIRA...
 ✓ Feature retrieved: "Add real-time collaboration to document editor"
-✓ Priority: High
-✓ Components: Frontend, API, WebSocket
-✓ Affected repos: edu-clients, api-workplace
+✓ Priority: High | Components: Frontend, API, WebSocket
+✓ Found edu-clients and api-workplace repositories
 
-Checking repository access...
-✓ Current repo: edu-clients
-✓ Found edu-clients at: /Users/dev/edu-clients
-✓ Found api-workplace at: /Users/dev/api-workplace
-
-Analyzing codebase for similar features...
-✓ Found WebSocket service: src/services/websocket.ts
-✓ Found editor component: src/components/Editor/index.tsx
-✓ Found collaboration examples in: src/features/chat
-
-Backend analysis...
-✓ WebSocket handler: api/websocket/handler.py
-✓ Redis pub/sub available for real-time
-✓ Existing document model found
+Analyzing codebase...
+✓ WebSocket infrastructure exists
+✓ Editor component found
+✓ Redis pub/sub available
 
 Creating implementation plan...
 
@@ -798,49 +463,14 @@ Feature Breakdown:
 - Backend: WebSocket rooms, operational transform
 - Infrastructure: Redis pub/sub, horizontal scaling
 
-Technical Approach:
-- Use existing WebSocket infrastructure
-- Implement CRDT for conflict-free editing
-- Add presence awareness system
-- Create collaborative undo/redo
-
-Implementation Phases:
-1. Foundation (2 weeks)
-   - WebSocket room management
-   - Basic cursor tracking
-   - Simple text synchronization
-
-2. Core Features (3 weeks)
-   - Operational transform implementation
-   - Conflict resolution
-   - Presence indicators
-   - User awareness
-
-3. Polish (2 weeks)
-   - Performance optimization
-   - Offline support
-   - Enhanced UX features
-
-4. Launch (1 week)
-   - Feature flag setup
-   - Monitoring
-   - Gradual rollout
-
-Estimated effort: 8 weeks (2 frontend, 2 backend devs)
+Implementation Phases: 4 phases over 8 weeks
+Team needed: 2 FE, 2 BE developers
+Complexity: High (WebSocket, real-time sync, conflict resolution)
 
 Generating documentation...
 ✓ Implementation plan: ~/Documents/technical-analysis/features/PROJ-5678/implementation-plan.md
 ✓ Technical design: ~/Documents/technical-analysis/features/PROJ-5678/technical-design.md
 ✓ Task breakdown: ~/Documents/technical-analysis/features/PROJ-5678/task-breakdown.md
-✓ Architecture diagram: ~/Documents/technical-analysis/features/PROJ-5678/diagrams/architecture
-
-Summary:
-- Feature type: Full-stack with real-time components
-- Complexity: High (WebSocket, conflict resolution)
-- Team needed: 2 FE, 2 BE, 1 DevOps
-- Timeline: 8 weeks
-- Major risks: Scaling WebSocket connections
-- Dependencies: Redis cluster upgrade needed
 
 View complete plan in report directory.
 ```

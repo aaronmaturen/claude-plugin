@@ -6,7 +6,11 @@ Audit an Angular application's service layer, dependency injection, state manage
 - `/angular-style-audit` - Material Design, theming, CSS patterns
 - `/angular-performance-audit` - Change detection, lazy loading, memory, bundles
 
-**Target Application:** $ARGUMENTS (path to Angular app, defaults to current directory)
+**Usage:**
+- `/angular-architecture-audit` - Full audit of current directory
+- `/angular-architecture-audit /path/to/app` - Full audit of specified path
+- `/angular-architecture-audit --branch` or `-b` - Audit only files changed in current branch
+- `/angular-architecture-audit --branch /path/to/app` - Branch audit in specified path
 
 ## Audit Philosophy
 
@@ -22,12 +26,114 @@ This audit focuses on **code that scales**. The goal is identifying patterns tha
 ### 0. **Setup and Discovery**
 
 ```bash
-APP_PATH="${ARGUMENTS:-.}"
+# Parse arguments for branch mode
+BRANCH_MODE=false
+APP_PATH="."
+
+for arg in $ARGUMENTS; do
+    case "$arg" in
+        --branch|-b)
+            BRANCH_MODE=true
+            ;;
+        *)
+            APP_PATH="$arg"
+            ;;
+    esac
+done
 
 # Verify Angular app
 if [[ ! -f "$APP_PATH/angular.json" ]] && [[ ! -f "$APP_PATH/package.json" ]]; then
     echo "❌ No Angular app found at: $APP_PATH"
     exit 1
+fi
+```
+
+### 0.1 Eligibility Check (Quick - use haiku)
+
+Before running a full audit, verify this audit is appropriate:
+
+**Skip audit if:**
+- No angular.json file found
+- No @angular/core in package.json dependencies
+
+If skipping, output: "⏭️ Skipping Angular architecture audit - [reason]. This project doesn't appear to need this audit."
+
+```bash
+# Quick check for Angular project
+if [[ ! -f "$APP_PATH/angular.json" ]]; then
+    if [[ -f "$APP_PATH/package.json" ]]; then
+        if ! grep -q "@angular/core" "$APP_PATH/package.json" 2>/dev/null; then
+            echo "⏭️ Skipping Angular architecture audit - no Angular project detected. No angular.json or @angular/core dependency found."
+            exit 0
+        fi
+    else
+        echo "⏭️ Skipping Angular architecture audit - no Angular project detected. No angular.json or package.json found."
+        exit 0
+    fi
+fi
+
+echo "✓ Angular project detected - proceeding with audit"
+```
+
+```bash
+# Branch mode setup
+if [[ "$BRANCH_MODE" == true ]]; then
+    CURRENT_BRANCH=$(git branch --show-current)
+    BASE_BRANCH="main"
+
+    # Get changed files (relevant to architecture: .ts files excluding tests)
+    CHANGED_FILES=$(git diff --name-only "$BASE_BRANCH"...HEAD 2>/dev/null | grep -E '\.(ts|html|scss)$' | grep -v "\.spec\.ts$" | grep -v "node_modules")
+
+    if [[ -z "$CHANGED_FILES" ]]; then
+        echo "⚠️  No relevant files changed compared to $BASE_BRANCH"
+        echo "   (Looking for: .ts, .html, .scss excluding .spec.ts)"
+        echo ""
+        echo "   Run without --branch for full audit"
+        exit 0
+    fi
+
+    echo "🌿 BRANCH MODE: Auditing only files changed in current branch"
+    echo "   Branch: $CURRENT_BRANCH"
+    echo "   Comparing to: $BASE_BRANCH"
+    echo "   Files to audit: $(echo "$CHANGED_FILES" | wc -l | tr -d ' ')"
+    echo ""
+
+    # Categorize changed files
+    SERVICE_FILES=$(echo "$CHANGED_FILES" | grep -E "\.service\.ts$")
+    COMPONENT_FILES=$(echo "$CHANGED_FILES" | grep -E "\.component\.ts$")
+    [[ -n "$SERVICE_FILES" ]] && echo "   📦 Service files: $(echo "$SERVICE_FILES" | wc -l | tr -d ' ')"
+    [[ -n "$COMPONENT_FILES" ]] && echo "   🧩 Component files: $(echo "$COMPONENT_FILES" | wc -l | tr -d ' ')"
+    echo ""
+
+    # Helper function for branch-aware searching
+    search_files() {
+        local pattern="$1"
+        local file_filter="${2:-}"
+
+        if [[ -n "$file_filter" ]]; then
+            echo "$CHANGED_FILES" | grep -E "$file_filter" | xargs grep -n "$pattern" 2>/dev/null
+        else
+            echo "$CHANGED_FILES" | xargs grep -n "$pattern" 2>/dev/null
+        fi
+    }
+
+    count_matches() {
+        search_files "$1" "$2" | wc -l | tr -d ' '
+    }
+else
+    echo "📂 Full audit mode: $APP_PATH"
+
+    # Full mode search helper
+    search_files() {
+        local pattern="$1"
+        local file_filter="${2:-*.ts}"
+
+        grep -rn "$pattern" --include="$file_filter" "$APP_PATH/src/app" 2>/dev/null
+    }
+
+    count_matches() {
+        search_files "$1" "$2" | wc -l | tr -d ' '
+    }
 fi
 
 # Get versions and dependencies
@@ -41,6 +147,8 @@ grep -q "ngxs" "$APP_PATH/package.json" && echo "   State: NGXS detected"
 grep -q "akita" "$APP_PATH/package.json" && echo "   State: Akita detected"
 grep -q "elf" "$APP_PATH/package.json" && echo "   State: Elf detected"
 ```
+
+**Note on Branch Mode:** When using `--branch`, use `search_files "pattern" "file_filter"` instead of raw grep commands. The file_filter is optional regex (e.g., `\.service\.ts$`).
 
 ### 1. **Service Architecture Audit**
 

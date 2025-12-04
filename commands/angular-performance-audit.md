@@ -6,7 +6,11 @@ Audit an Angular application's runtime performance, bundle size, change detectio
 - `/angular-style-audit` - Material Design, theming, CSS patterns
 - `/angular-architecture-audit` - Services, DI, state management, component structure
 
-**Target Application:** $ARGUMENTS (path to Angular app, defaults to current directory)
+**Usage:**
+- `/angular-performance-audit` - Full audit of current directory
+- `/angular-performance-audit /path/to/app` - Full audit of specified path
+- `/angular-performance-audit --branch` or `-b` - Audit only files changed in current branch
+- `/angular-performance-audit --branch /path/to/app` - Branch audit in specified path
 
 ## Audit Philosophy
 
@@ -22,12 +26,85 @@ This audit focuses on **perceived and actual performance**. The goal is identify
 ### 0. **Setup and Discovery**
 
 ```bash
-APP_PATH="${ARGUMENTS:-.}"
+# Parse arguments for branch mode
+BRANCH_MODE=false
+APP_PATH="."
+
+for arg in $ARGUMENTS; do
+    case "$arg" in
+        --branch|-b)
+            BRANCH_MODE=true
+            ;;
+        *)
+            APP_PATH="$arg"
+            ;;
+    esac
+done
 
 # Verify Angular app
 if [[ ! -f "$APP_PATH/angular.json" ]] && [[ ! -f "$APP_PATH/package.json" ]]; then
     echo "❌ No Angular app found at: $APP_PATH"
     exit 1
+fi
+
+# Branch mode setup
+if [[ "$BRANCH_MODE" == true ]]; then
+    CURRENT_BRANCH=$(git branch --show-current)
+    BASE_BRANCH="main"
+
+    # Get changed files (performance: .ts, .html, .scss for component analysis)
+    CHANGED_FILES=$(git diff --name-only "$BASE_BRANCH"...HEAD 2>/dev/null | grep -E '\.(ts|html|scss)$' | grep -v "\.spec\.ts$" | grep -v "node_modules")
+
+    if [[ -z "$CHANGED_FILES" ]]; then
+        echo "⚠️  No relevant files changed compared to $BASE_BRANCH"
+        echo "   (Looking for: .ts, .html, .scss)"
+        echo ""
+        echo "   Run without --branch for full audit"
+        exit 0
+    fi
+
+    echo "🌿 BRANCH MODE: Performance audit of files changed in current branch"
+    echo "   Branch: $CURRENT_BRANCH"
+    echo "   Comparing to: $BASE_BRANCH"
+    echo "   Files to audit: $(echo "$CHANGED_FILES" | wc -l | tr -d ' ')"
+    echo ""
+
+    # Categorize changed files
+    COMPONENT_FILES=$(echo "$CHANGED_FILES" | grep -E "\.component\.ts$")
+    TEMPLATE_FILES=$(echo "$CHANGED_FILES" | grep -E "\.html$")
+    [[ -n "$COMPONENT_FILES" ]] && echo "   🧩 Component files: $(echo "$COMPONENT_FILES" | wc -l | tr -d ' ')"
+    [[ -n "$TEMPLATE_FILES" ]] && echo "   📄 Template files: $(echo "$TEMPLATE_FILES" | wc -l | tr -d ' ')"
+    echo ""
+
+    # Helper function for branch-aware searching
+    search_files() {
+        local pattern="$1"
+        local file_filter="${2:-}"
+
+        if [[ -n "$file_filter" ]]; then
+            echo "$CHANGED_FILES" | grep -E "$file_filter" | xargs grep -n "$pattern" 2>/dev/null
+        else
+            echo "$CHANGED_FILES" | xargs grep -n "$pattern" 2>/dev/null
+        fi
+    }
+
+    count_matches() {
+        search_files "$1" "$2" | wc -l | tr -d ' '
+    }
+else
+    echo "📂 Full audit mode: $APP_PATH"
+
+    # Full mode search helper
+    search_files() {
+        local pattern="$1"
+        local file_filter="${2:-*.ts}"
+
+        grep -rn "$pattern" --include="$file_filter" "$APP_PATH/src/app" 2>/dev/null
+    }
+
+    count_matches() {
+        search_files "$1" "$2" | wc -l | tr -d ' '
+    }
 fi
 
 # Get versions
@@ -39,6 +116,8 @@ grep -q "compression" "$APP_PATH/package.json" && echo "   ✓ Compression avail
 grep -q "@angular/service-worker" "$APP_PATH/package.json" && echo "   ✓ Service Worker available"
 grep -q "ngx-virtual-scroll\|cdk/scrolling" "$APP_PATH/package.json" && echo "   ✓ Virtual scrolling available"
 ```
+
+**Note on Branch Mode:** When using `--branch`, use `search_files "pattern" "file_filter"` to search only changed files. For performance audits, branch mode helps focus on new code that might introduce regressions.
 
 ### 1. **Bundle Size Audit**
 

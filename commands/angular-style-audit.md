@@ -6,7 +6,11 @@ Audit an Angular application's Material Design implementation, theming architect
 - `/angular-architecture-audit` - Services, DI, state management, component structure
 - `/angular-performance-audit` - Change detection, lazy loading, memory, bundles
 
-**Target Application:** $ARGUMENTS (path to Angular app, defaults to current directory)
+**Usage:**
+- `/angular-style-audit` - Full audit of current directory
+- `/angular-style-audit /path/to/app` - Full audit of specified path
+- `/angular-style-audit --branch` or `-b` - Audit only files changed in current branch
+- `/angular-style-audit --branch /path/to/app` - Branch audit in specified path
 
 ## Audit Philosophy
 
@@ -21,14 +25,84 @@ This audit focuses on **sustainable, themeable, maintainable code**. The goal is
 ### 0. **Setup and Discovery**
 
 ```bash
-# Determine target path
-APP_PATH="${ARGUMENTS:-.}"
+# Parse arguments for branch mode
+BRANCH_MODE=false
+APP_PATH="."
+
+for arg in $ARGUMENTS; do
+    case "$arg" in
+        --branch|-b)
+            BRANCH_MODE=true
+            ;;
+        *)
+            APP_PATH="$arg"
+            ;;
+    esac
+done
 
 # Verify it's an Angular app
 if [[ ! -f "$APP_PATH/angular.json" ]] && [[ ! -f "$APP_PATH/package.json" ]]; then
     echo "❌ No Angular app found at: $APP_PATH"
     echo "Please provide the path to an Angular application"
     exit 1
+fi
+
+# Branch mode setup
+if [[ "$BRANCH_MODE" == true ]]; then
+    CURRENT_BRANCH=$(git branch --show-current)
+    BASE_BRANCH="main"
+
+    # Get changed files (style audit: .scss, .css, .html, .ts)
+    CHANGED_FILES=$(git diff --name-only "$BASE_BRANCH"...HEAD 2>/dev/null | grep -E '\.(scss|css|html|ts)$' | grep -v "\.spec\.ts$" | grep -v "node_modules")
+
+    if [[ -z "$CHANGED_FILES" ]]; then
+        echo "⚠️  No relevant files changed compared to $BASE_BRANCH"
+        echo "   (Looking for: .scss, .css, .html, .ts)"
+        echo ""
+        echo "   Run without --branch for full audit"
+        exit 0
+    fi
+
+    echo "🌿 BRANCH MODE: Auditing only files changed in current branch"
+    echo "   Branch: $CURRENT_BRANCH"
+    echo "   Comparing to: $BASE_BRANCH"
+    echo "   Files to audit: $(echo "$CHANGED_FILES" | wc -l | tr -d ' ')"
+    echo ""
+
+    # Categorize changed files
+    STYLE_FILES=$(echo "$CHANGED_FILES" | grep -E "\.(scss|css)$")
+    [[ -n "$STYLE_FILES" ]] && echo "   🎨 Style files: $(echo "$STYLE_FILES" | wc -l | tr -d ' ')"
+    echo ""
+
+    # Helper function for branch-aware searching
+    search_files() {
+        local pattern="$1"
+        local file_filter="${2:-}"
+
+        if [[ -n "$file_filter" ]]; then
+            echo "$CHANGED_FILES" | grep -E "$file_filter" | xargs grep -n "$pattern" 2>/dev/null
+        else
+            echo "$CHANGED_FILES" | xargs grep -n "$pattern" 2>/dev/null
+        fi
+    }
+
+    count_matches() {
+        search_files "$1" "$2" | wc -l | tr -d ' '
+    }
+else
+    echo "📂 Full audit mode: $APP_PATH"
+
+    # Full mode search helper
+    search_files() {
+        local pattern="$1"
+        local file_filter="${2:-*.scss}"
+
+        grep -rn "$pattern" --include="$file_filter" "$APP_PATH/src" 2>/dev/null
+    }
+
+    count_matches() {
+        search_files "$1" "$2" | wc -l | tr -d ' '
+    }
 fi
 
 # Get Angular and Material versions
@@ -38,6 +112,8 @@ MATERIAL_VERSION=$(grep '"@angular/material"' "$APP_PATH/package.json" | sed 's/
 echo "   Angular: $ANGULAR_VERSION"
 echo "   Material: $MATERIAL_VERSION"
 ```
+
+**Note on Branch Mode:** When using `--branch`, use `search_files "pattern" "file_filter"` to search only changed files. Filter examples: `\.scss$`, `\.html$`.
 
 ### 1. **Material Design System Audit**
 
