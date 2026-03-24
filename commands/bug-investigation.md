@@ -253,6 +253,115 @@ it('should [expected behavior] when [condition]', () => {
 2. FVC are defined (at minimum: original scenario + 2 edge cases)
 3. Regression areas identified
 4. Test strategy is clear
+5. Metabase/MySQL query drafted to verify data impact (if applicable)
+6. **Failing TDD test written that reproduces the bug**
+
+---
+
+### 3.6 **Metabase/MySQL Data Verification**
+
+**Investigate whether bug findings can be reproduced via database queries.**
+
+This provides independent verification of the bug's impact and helps identify affected records.
+
+```markdown
+## Data Verification (Metabase/MySQL)
+
+### Query Objective
+[What data condition are we trying to verify?]
+
+### Query
+```sql
+-- Description: [What this query checks]
+-- ⚠️ PII PROTECTION: Students are clients - NEVER include names, emails, or identifiers in results
+SELECT
+    COUNT(*) as affected_count,
+    -- Use anonymized aggregates only
+    DATE(created_at) as date,
+    status
+FROM [table]
+WHERE [bug_condition]
+GROUP BY DATE(created_at), status;
+```
+
+### PII Guidelines
+- **NEVER** select: `first_name`, `last_name`, `email`, `phone`, student identifiers
+- **ALWAYS** use: `COUNT(*)`, `AVG()`, `MIN()`, `MAX()`, date aggregates
+- **ANONYMIZE** any sample data needed for debugging
+- **PREFER** IDs only when absolutely necessary, never in reports
+
+### Query Results
+| Metric | Value |
+|--------|-------|
+| Total affected records | |
+| Date range | |
+| Pattern observed | |
+
+### Data Confirms Bug?
+- [ ] Yes - data shows [X] records affected by [condition]
+- [ ] Partially - [explanation]
+- [ ] No - data doesn't support bug hypothesis
+- [ ] Unable to verify - [reason]
+```
+
+**Metabase Dashboard Opportunity:**
+If this bug pattern could recur, consider creating a Metabase alert/dashboard to detect it early.
+
+---
+
+### 3.7 **TDD Bug Reproduction** (CRITICAL)
+
+**⚠️ Write a failing test BEFORE attempting any fix.**
+
+The test-first approach ensures:
+1. You truly understand the bug's behavior
+2. You have proof the fix actually works
+3. The bug can never silently return
+
+```markdown
+## TDD Bug Reproduction
+
+### Step 1: Write Failing Test First
+```typescript
+describe('[Feature] - Bug Reproduction', () => {
+  it('should [expected behavior] when [condition] (reproduces BUG_ID)', () => {
+    // Arrange: Set up the bug condition
+
+    // Act: Trigger the buggy behavior
+
+    // Assert: What SHOULD happen (this will FAIL on current code)
+
+  });
+});
+```
+
+### Step 2: Verify Test Fails
+```bash
+# Run the test - it MUST fail
+npm test -- --grep "reproduces BUG_ID"
+
+# Expected: FAIL - [error message showing bug behavior]
+```
+
+### Step 3: Document the Failure
+- [ ] Test written that reproduces the exact bug scenario
+- [ ] Test FAILS on current main/develop branch
+- [ ] Failure message clearly shows the bug behavior
+- [ ] Test covers the specific FVC-1 criterion
+
+### Edge Case Tests (write these too)
+```typescript
+it('should handle [edge case 1] (FVC-2)', () => { ... });
+it('should handle [edge case 2] (FVC-3)', () => { ... });
+```
+
+### TDD Checkpoint
+- [ ] Failing test committed/documented BEFORE any fix code
+- [ ] Test failure message is clear and diagnostic
+- [ ] Edge case tests also fail as expected
+```
+
+**⚠️ DO NOT proceed to fix implementation until you have a failing test that reproduces the bug.**
 
 ---
 
@@ -463,6 +572,38 @@ fi
 ### Expected vs Actual Behavior
 - **Expected:** [What should happen]
 - **Actual:** [What actually happens]
+
+## Data Verification (Metabase/MySQL)
+
+### Query Used
+```sql
+-- ⚠️ PII PROTECTION: No student names/emails in results
+[query]
+```
+
+### Results
+| Metric | Value |
+|--------|-------|
+| Affected records | |
+| Date range | |
+| Pattern | |
+
+### Data Confirms Bug?
+- [ ] Yes / [ ] Partially / [ ] No / [ ] N/A
+
+## TDD Bug Reproduction
+
+### Failing Test
+```typescript
+it('should [expected] when [condition] (reproduces [[BUG_ID]])', () => {
+  // [test code]
+});
+```
+
+### Test Status
+- [ ] Test written before fix
+- [ ] Test fails on main branch
+- [ ] Failure message shows bug behavior
 
 ## 5 Whys Analysis
 
@@ -893,11 +1034,16 @@ View full investigation in report directory.
 - [ ] Fix is minimal and focused (no unrelated changes)
 - [ ] Fix doesn't introduce new edge cases
 
-### Required Tests
-- [ ] **Regression test added** that would have caught this bug
+### Required Tests (TDD Approach)
+- [ ] **Failing test written BEFORE fix** (TDD reproduction)
 - [ ] Test fails without the fix (verified on main branch)
 - [ ] Test passes with the fix
 - [ ] Edge case tests added for FVC-2, FVC-3
+
+### Data Verification
+- [ ] Metabase/MySQL query confirms bug impact (or N/A documented)
+- [ ] **No PII in query results** (student names, emails, identifiers)
+- [ ] Affected record count documented
 
 ### Regression Check
 - [ ] Related features still work (FVC-R1, FVC-R2)
@@ -970,6 +1116,9 @@ View full investigation in report directory.
 
 ## Notes:
 - **FVC-First**: Every bug fix must have explicit verification criteria
+- **TDD Reproduction**: Write failing test BEFORE attempting fix
+- **Data Verification**: Confirm bug impact via Metabase/MySQL when applicable
+- **PII Protection**: Clients are students - NEVER include names/emails in SQL reports
 - **Test Requirement**: No fix merges without a regression test
 - **Edge Cases**: At minimum, original scenario + 2 edge cases
 - Integrates with JIRA CLI for bug details
@@ -979,7 +1128,9 @@ View full investigation in report directory.
 
 ## Key Differences from Standard Bug Investigation:
 1. **Gate at Step 3.5** - Define FVC before deep investigation
-2. **FVC Table at Top** - Always visible, tracks verification status
-3. **Test Requirement** - Must have test that would have caught bug
-4. **Edge Case Discovery** - Proactively find related scenarios
-5. **PR Checklist** - Explicit FVC verification before merge
+2. **Metabase/MySQL Verification (3.6)** - Confirm bug impact via data queries (PII-safe)
+3. **TDD Bug Reproduction (3.7)** - Failing test written BEFORE any fix code
+4. **FVC Table at Top** - Always visible, tracks verification status
+5. **Test Requirement** - Must have test that would have caught bug
+6. **Edge Case Discovery** - Proactively find related scenarios
+7. **PR Checklist** - Explicit FVC verification before merge
