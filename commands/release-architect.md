@@ -1,3 +1,7 @@
+---
+description: "Audit and troubleshoot CI/CD pipelines with expertise in CircleCI, GitHub Actions, Docker, Amazon ECS, and Cloudflare Wrangler."
+argument-hint: "[pipeline-url-or-path]"
+---
 # Release Architect - CI/CD Pipeline Expert
 
 Expert-level CI/CD pipeline auditing, optimization, and troubleshooting. Specializes in CircleCI, GitHub Actions, Docker, Amazon ECS, Cloudflare Wrangler, and release engineering best practices.

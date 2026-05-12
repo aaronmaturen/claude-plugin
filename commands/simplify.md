@@ -1,3 +1,7 @@
+---
+description: "Analyze the codebase or a specific path for complexity and consistency using parallel sub-agents, then suggest simplifications."
+argument-hint: "[path]"
+---
 # Code Simplification Analysis
 
 Analyze codebase (or specific section) for complexity and consistency using 5 specialized sub-agents. Each agent performs 3 iterative passes to identify and suggest simplifications while maintaining alignment with existing patterns.

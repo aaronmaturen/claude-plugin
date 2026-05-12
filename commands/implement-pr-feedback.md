@@ -1,3 +1,7 @@
+---
+description: "Analyze GitHub PR comments and implement the suggested changes."
+argument-hint: "<PR-url>"
+---
 # Implement PR Feedback
 
 Analyze GitHub PR comments and implement suggested changes.

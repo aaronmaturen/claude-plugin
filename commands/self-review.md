@@ -1,3 +1,6 @@
+---
+description: "Perform a comprehensive self-review of changes compared to main branch, checking code quality, conventions adherence, and potential issues."
+---
 # Self Review - Ultra-Think Code Quality Check
 
 Perform a comprehensive self-review of changes compared to main branch, checking for code quality, conventions adherence, potential issues, and documenting complex decisions.

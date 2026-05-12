@@ -1,3 +1,6 @@
+---
+description: "Analyze staged changes and generate a JIRA-linked commit message based on the current branch name."
+---
 # Generate JIRA-Linked Commit Message
 
 Analyze staged changes and generate a commit message with JIRA ticket number from the current branch.

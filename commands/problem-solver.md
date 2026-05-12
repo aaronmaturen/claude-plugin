@@ -1,3 +1,7 @@
+---
+description: "Research external solutions for an issue before or alongside custom implementation; use when the problem may have known public solutions."
+argument-hint: "<issue-description>"
+---
 # Problem Solver - External Research Investigation
 
 Research-focused investigation for issues that may have known solutions externally. Use this BEFORE or ALONGSIDE `/bug-investigation` when:

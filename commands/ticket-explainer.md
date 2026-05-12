@@ -1,3 +1,7 @@
+---
+description: "Explain what work is needed for a JIRA ticket, pulling context from JIRA, GitHub, and the latest code on main."
+argument-hint: "<JIRA-ticket-id>"
+---
 # Ticket Explainer
 
 Explain what work is needed for a JIRA ticket in plain language, pulling context from JIRA, GitHub, and the latest code on `main`. Surfaces related PRs, affected files, and direct links to relevant GitHub resources.

@@ -1,3 +1,7 @@
+---
+description: "Audit an Angular application's Material Design implementation, theming architecture, and CSS patterns for sustainable, themeable styling."
+argument-hint: "[app-path]"
+---
 # Angular Style Audit
 
 Audit an Angular application's Material Design implementation, theming architecture, and CSS patterns. Focuses on sustainable, themeable styling.

@@ -1,3 +1,7 @@
+---
+description: "Generate a Deckset markdown presentation for the repository, current branch, or a custom topic."
+argument-hint: "[topic]"
+---
 # Generate Deckset Markdown Slidedeck
 
 Generate a markdown presentation in Deckset format for the entire repository, current branch, or a custom topic.

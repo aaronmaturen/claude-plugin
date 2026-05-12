@@ -1,3 +1,7 @@
+---
+description: "Audit a Django application for security vulnerabilities including SQL injection, authentication weaknesses, permission bypasses, and OWASP Top 10 issues."
+argument-hint: "[app-path]"
+---
 # Django Security Audit
 
 Audit a Django application for security vulnerabilities including SQL injection, authentication weaknesses, permission bypasses, and OWASP Top 10 issues.

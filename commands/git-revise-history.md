@@ -1,3 +1,6 @@
+---
+description: "Iterate through git commit history to remove Claude attributions and rewrite placeholder commit messages with informative descriptions."
+---
 # Git Revise History - Remove Claude Attributions
 
 Iterate through git commit history to remove Claude attributions and rewrite placeholder commit messages with informative descriptions based on actual code changes.
