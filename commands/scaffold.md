@@ -1,3 +1,6 @@
+---
+description: "Interactively scaffold a new project with proper setup and initialization."
+---
 # ATM Scaffold Command
 
 Interactive project scaffolding command that creates a new project with proper setup and initialization.

@@ -1,3 +1,7 @@
+---
+description: "Audit a frontend application for WCAG 2.1/2.2 compliance, screen reader compatibility, keyboard accessibility, and inclusive design patterns."
+argument-hint: "[app-path]"
+---
 # Accessibility Audit
 
 Audit a frontend application for WCAG 2.1/2.2 compliance, screen reader compatibility, keyboard accessibility, and inclusive design patterns.

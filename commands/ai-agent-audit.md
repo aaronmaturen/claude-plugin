@@ -1,3 +1,7 @@
+---
+description: "Audit AI agent prompts for best practices in prompt engineering, tool definitions, safety guardrails, and consistency patterns."
+argument-hint: "[path]"
+---
 # AI Agent Prompt Audit
 
 Audit AI agent prompts for best practices in prompt engineering, tool definitions, safety guardrails, and consistency patterns.

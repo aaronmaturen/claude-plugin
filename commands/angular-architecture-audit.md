@@ -1,3 +1,7 @@
+---
+description: "Audit an Angular application's service layer, dependency injection, state management, and component architecture for maintainable and testable patterns."
+argument-hint: "[app-path]"
+---
 # Angular Architecture Audit
 
 Audit an Angular application's service layer, dependency injection, state management, and component architecture. Focuses on maintainable, testable code patterns.

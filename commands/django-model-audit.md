@@ -1,3 +1,7 @@
+---
+description: "Audit a Django application's model layer for N+1 queries, missing indexes, data integrity issues, and query optimization opportunities."
+argument-hint: "[app-path]"
+---
 # Django Model & Query Audit
 
 Audit a Django application's model layer for N+1 queries, missing indexes, data integrity issues, and query optimization opportunities.

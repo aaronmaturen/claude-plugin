@@ -1,3 +1,7 @@
+---
+description: "Investigate a technical spike by researching libraries with Context7, evaluating the codebase, and producing a comprehensive analysis report."
+argument-hint: "<spike-topic>"
+---
 # Spike Investigation - Technical Research & Analysis
 
 Investigate a technical spike by gathering requirements, evaluating the codebase with Serena, researching libraries with Context7, performing deep analysis, and creating a comprehensive report.

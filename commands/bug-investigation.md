@@ -1,3 +1,7 @@
+---
+description: "Investigate a JIRA bug using the 5 Whys technique to identify root causes across repositories, then create a comprehensive analysis report."
+argument-hint: "<JIRA-ticket-id>"
+---
 # Bug Investigation - 5 Whys Root Cause Analysis
 
 Investigate a JIRA bug using the 5 Whys technique to identify root causes across multiple repositories (frontend/backend), then create a comprehensive analysis report.

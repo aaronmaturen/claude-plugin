@@ -1,3 +1,7 @@
+---
+description: "Review a GitHub PR and provide a comprehensive summary with documentation links, tailored for junior engineers."
+argument-hint: "<PR-url>"
+---
 # PR Review for Junior Engineers
 
 Review a GitHub PR and provide a comprehensive summary with documentation links.

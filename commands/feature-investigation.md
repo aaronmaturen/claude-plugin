@@ -1,3 +1,7 @@
+---
+description: "Investigate and plan the implementation of a new feature with Acceptance Criteria as the central organizing principle."
+argument-hint: "<JIRA-ticket-id>"
+---
 # Feature Investigation - AC-Driven Implementation Planning
 
 Investigate and plan the implementation of a new feature with **Acceptance Criteria as the central organizing principle**. Every task, test, and verification ties back to specific AC.

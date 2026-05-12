@@ -1,3 +1,6 @@
+---
+description: "Summarize the current git branch's changes and provide comprehensive context for continuing work on the branch."
+---
 # Summarize Current Branch
 
 You are analyzing the current git branch to provide comprehensive context for continuing work.

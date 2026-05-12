@@ -1,3 +1,7 @@
+---
+description: "Audit a Django REST Framework or GraphQL API for serializer efficiency, permissions, pagination, throttling, and API design patterns."
+argument-hint: "[app-path]"
+---
 # Django API Audit
 
 Audit a Django REST Framework / GraphQL API for serializer efficiency, permissions, pagination, throttling, and API design patterns.

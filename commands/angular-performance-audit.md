@@ -1,3 +1,7 @@
+---
+description: "Audit an Angular application's runtime performance, bundle size, change detection strategy, and optimization patterns."
+argument-hint: "[app-path]"
+---
 # Angular Performance Audit
 
 Audit an Angular application's runtime performance, bundle size, change detection strategy, and optimization patterns. Focuses on fast initial load and smooth runtime.
